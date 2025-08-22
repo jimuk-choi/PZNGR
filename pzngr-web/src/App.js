@@ -1,10 +1,17 @@
-import "./App.css";
+import styled from "styled-components";
+import Header from "./components/Header";
+
+const AppContainer = styled.div`
+  text-align: center;
+  min-height: 100vh;
+  background-color: #ffffff;
+`;
 
 function App() {
   return (
-    <div className="App">
-      <h1>Hello PZNGR !!!!!</h1>
-    </div>
+    <AppContainer>
+      <Header />
+    </AppContainer>
   );
 }
 
