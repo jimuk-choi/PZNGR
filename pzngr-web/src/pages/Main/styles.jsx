@@ -37,6 +37,10 @@ export const HeaderSection = styled.header`
     font-size: 18px;
     color: #000000;
 
+    @media (max-width: ${breakpoints.tablet}) {
+      display: none;
+    }
+
     @media (max-width: ${breakpoints.mobile}) {
       display: none;
     }
@@ -85,6 +89,10 @@ export const HeaderSection = styled.header`
       background-repeat: no-repeat;
       background-position: center;
 
+      @media (max-width: ${breakpoints.tablet}) {
+        display: none;
+      }
+
       @media (max-width: ${breakpoints.mobile}) {
         display: none;
       }
@@ -96,6 +104,26 @@ export const HeaderSection = styled.header`
 
     .icon-cart {
       background-image: url("http://localhost:3845/assets/ceebafed460942c5fd7eb68226307c77f35079e4.svg");
+    }
+  }
+
+  @media (max-width: ${breakpoints.tablet}) {
+    .menu-hamburger {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &::after {
+        content: "";
+        width: 28px;
+        height: 28px;
+        background-image: url("http://localhost:3845/assets/b6083827f049481c358e552fde03a1588455099a.svg");
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+      }
     }
   }
 
@@ -289,12 +317,10 @@ export const FooterSection = styled.footer`
               align-items: flex-start;
               font-size: 14px;
               color: #000000;
-              flex-wrap: wrap;
               @media (max-width: ${breakpoints.mobile}) {
                 font-size: 12px;
                 flex: 1;
                 min-width: 0;
-                flex-wrap: wrap;
               }
 
               .label {

@@ -17,7 +17,7 @@ export const HeaderWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
   /* max-width: 1200px; */
-  padding: 0 96px; /* Figma: px-24 -> 96px */
+  padding: 0 64px; /* Figma: px-24 -> 96px */
   height: 100%;
   position: relative;
 
