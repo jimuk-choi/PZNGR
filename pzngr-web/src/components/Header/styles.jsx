@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { NavLink } from "react-router-dom";
 
 export const HeaderContainer = styled.div`
   background-color: #ffffff;
@@ -14,6 +15,7 @@ export const HeaderWrapper = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+  /* max-width: 1200px; */
   padding: 0 64px;
   height: 100%;
   position: relative;
@@ -119,5 +121,33 @@ export const Icon = styled.span`
 
   @media (max-width: 480px) {
     font-size: 18px;
+  }
+`;
+
+export const LinkStyle = styled.a`
+  text-decoration: none;
+  color: inherit;
+
+  &:active,
+  &:focus,
+  &:visited {
+    text-decoration: none;
+    color: inherit;
+  }
+`;
+
+export const NavLinkStyle = styled(NavLink)`
+  text-decoration: none;
+  color: inherit;
+
+  &.active {
+    color: inherit;
+  }
+
+  &:active,
+  &:focus,
+  &:visited {
+    text-decoration: none;
+    color: inherit;
   }
 `;

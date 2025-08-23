@@ -1,7 +1,9 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "../components/Header";
 import { AppContainer } from "./styles.jsx";
+import Home from "../pages/Home";
 import Shop from "../pages/Shop";
+import CustomerService from "../pages/CustomerService";
 
 function App() {
   return (
@@ -9,8 +11,9 @@ function App() {
       <AppContainer>
         <Header />
         <Routes>
-          <Route path="/" element={<h1>홈 페이지</h1>} /> {/* 임시 홈 페이지 */}
+          <Route path="/" element={<Home />} />
           <Route path="/shop" element={<Shop />} />
+          <Route path="/customer-service" element={<CustomerService />} />
         </Routes>
       </AppContainer>
     </Router>

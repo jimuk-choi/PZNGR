@@ -11,6 +11,7 @@ import {
   LogoImage,
   IconItem,
   Icon,
+  NavLinkStyle,
 } from "./styles.jsx";
 
 const Header = () => {
@@ -20,34 +21,38 @@ const Header = () => {
         {/* Left Menu */}
         <MenuBox>
           <MenuItem>
-            <NavLink to="/shop">
+            <NavLinkStyle to="/shop">
               <MenuText>SHOP</MenuText>
-            </NavLink>
+            </NavLinkStyle>
           </MenuItem>
           <MenuItem>
-            <MenuText>고객센터</MenuText>
+            <NavLinkStyle to="/customer-service">
+              <MenuText>고객센터</MenuText>
+            </NavLinkStyle>
           </MenuItem>
         </MenuBox>
 
         {/* Logo - Centered */}
         <LogoBox>
-          <LogoImage src={Logo01} alt="PZNGR Logo" />
+          <NavLinkStyle to="/">
+            <LogoImage src={Logo01} alt="PZNGR Logo" />
+          </NavLinkStyle>
         </LogoBox>
 
         {/* Right Menu - Action Icons */}
         <MenuBox>
-          <IconItem>
+          {/* <IconItem>
             <Icon className="material-symbols-outlined">search</Icon>
-          </IconItem>
+          </IconItem> */}
           <IconItem>
             <Icon className="material-symbols-outlined">person</Icon>
           </IconItem>
           <IconItem>
             <Icon className="material-symbols-outlined">shopping_basket</Icon>
           </IconItem>
-          <IconItem>
+          {/* <IconItem>
             <Icon className="material-symbols-outlined">menu</Icon>
-          </IconItem>
+          </IconItem> */}
         </MenuBox>
       </HeaderWrapper>
     </HeaderContainer>
