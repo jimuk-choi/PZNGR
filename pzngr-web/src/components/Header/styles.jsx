@@ -1,5 +1,6 @@
-import styled from "styled-components";
+import styled, { css } from "styled-components";
 import { NavLink } from "react-router-dom";
+import { media, maxMedia } from "../../styles/breakpoints.jsx";
 
 export const HeaderContainer = styled.div`
   background-color: #ffffff;
@@ -16,23 +17,23 @@ export const HeaderWrapper = styled.div`
   justify-content: space-between;
   width: 100%;
   /* max-width: 1200px; */
-  padding: 0 64px;
+  padding: 0 96px; /* Figma: px-24 -> 96px */
   height: 100%;
   position: relative;
 
-  @media (max-width: 768px) {
+  ${maxMedia.tablet`
     padding: 0 20px;
-  }
+  `}
 
-  @media (max-width: 480px) {
+  ${maxMedia.mobile`
     padding: 0 16px;
-  }
+  `}
 `;
 
 export const MenuBox = styled.div`
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 32px; /* Figma: gap-8 -> 32px */
 `;
 
 export const MenuItem = styled.div`
@@ -46,18 +47,18 @@ export const MenuItem = styled.div`
 
 export const MenuText = styled.p`
   font-family: "Pretendard", sans-serif;
-  font-size: 18px;
+  font-size: 18px; /* Figma: text-[18px] */
   color: #000000;
   margin: 0;
   white-space: nowrap;
 
-  @media (max-width: 768px) {
+  ${maxMedia.tablet`
     font-size: 16px;
-  }
+  `}
 
-  @media (max-width: 480px) {
+  ${maxMedia.mobile`
     font-size: 14px;
-  }
+  `}
 `;
 
 export const LogoBox = styled.div`
@@ -72,18 +73,19 @@ export const LogoBox = styled.div`
 `;
 
 export const LogoImage = styled.img`
-  height: 51px;
-  width: auto;
+  height: 55px; /* Figma: h-14 -> 56px, image 2 is 55px */
+  width: 200px; /* Figma: w-[200px] */
   object-fit: contain;
+  object-position: center;
   display: block;
 
-  @media (max-width: 768px) {
+  ${maxMedia.tablet`
     height: 45px;
-  }
+  `}
 
-  @media (max-width: 480px) {
+  ${maxMedia.mobile`
     height: 40px;
-  }
+  `}
 `;
 
 export const IconItem = styled.div`
@@ -99,29 +101,29 @@ export const IconItem = styled.div`
     /* transform: scale(1.1); */
   }
 
-  @media (max-width: 768px) {
+  ${maxMedia.tablet`
     width: 36px;
     height: 36px;
-  }
+  `}
 
-  @media (max-width: 480px) {
+  ${maxMedia.mobile`
     width: 32px;
     height: 32px;
-  }
+  `}
 `;
 
 export const Icon = styled.span`
-  font-size: 24px;
+  font-size: 24px; /* Figma: size-10 -> 40px, but icon size is 24px default */
   color: #000000;
   font-weight: 200;
 
-  @media (max-width: 768px) {
+  ${maxMedia.tablet`
     font-size: 20px;
-  }
+  `}
 
-  @media (max-width: 480px) {
+  ${maxMedia.mobile`
     font-size: 18px;
-  }
+  `}
 `;
 
 export const LinkStyle = styled.a`
