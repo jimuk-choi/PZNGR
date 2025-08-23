@@ -1,8 +1,6 @@
-import React from "react";
 import styled from "styled-components";
-import Logo01 from "../assets/images/Logo_01.jpg";
 
-const HeaderContainer = styled.div`
+export const HeaderContainer = styled.div`
   background-color: #ffffff;
   width: 100%;
   height: 100px;
@@ -11,7 +9,7 @@ const HeaderContainer = styled.div`
   justify-content: center;
 `;
 
-const HeaderWrapper = styled.div`
+export const HeaderWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -29,13 +27,13 @@ const HeaderWrapper = styled.div`
   }
 `;
 
-const MenuBox = styled.div`
+export const MenuBox = styled.div`
   display: flex;
   align-items: center;
   gap: 16px;
 `;
 
-const MenuItem = styled.div`
+export const MenuItem = styled.div`
   cursor: pointer;
   transition: color 0.2s ease;
 
@@ -44,7 +42,7 @@ const MenuItem = styled.div`
   }
 `;
 
-const MenuText = styled.p`
+export const MenuText = styled.p`
   font-family: "Pretendard", sans-serif;
   font-size: 18px;
   color: #000000;
@@ -60,7 +58,7 @@ const MenuText = styled.p`
   }
 `;
 
-const LogoBox = styled.div`
+export const LogoBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,7 +69,7 @@ const LogoBox = styled.div`
   z-index: 1;
 `;
 
-const LogoImage = styled.img`
+export const LogoImage = styled.img`
   height: 51px;
   width: auto;
   object-fit: contain;
@@ -86,7 +84,7 @@ const LogoImage = styled.img`
   }
 `;
 
-const IconItem = styled.div`
+export const IconItem = styled.div`
   width: 40px;
   height: 40px;
   display: flex;
@@ -96,7 +94,7 @@ const IconItem = styled.div`
   transition: transform 0.2s ease;
 
   &:hover {
-    transform: scale(1.1);
+    /* transform: scale(1.1); */
   }
 
   @media (max-width: 768px) {
@@ -110,7 +108,7 @@ const IconItem = styled.div`
   }
 `;
 
-const Icon = styled.span`
+export const Icon = styled.span`
   font-size: 24px;
   color: #000000;
   font-weight: 200;
@@ -123,44 +121,3 @@ const Icon = styled.span`
     font-size: 18px;
   }
 `;
-
-const Header = () => {
-  return (
-    <HeaderContainer>
-      <HeaderWrapper>
-        {/* Left Menu */}
-        <MenuBox>
-          <MenuItem>
-            <MenuText>SHOP</MenuText>
-          </MenuItem>
-          <MenuItem>
-            <MenuText>고객센터</MenuText>
-          </MenuItem>
-        </MenuBox>
-
-        {/* Logo - Centered */}
-        <LogoBox>
-          <LogoImage src={Logo01} alt="PZNGR Logo" />
-        </LogoBox>
-
-        {/* Right Menu - Action Icons */}
-        <MenuBox>
-          <IconItem>
-            <Icon className="material-symbols-outlined">search</Icon>
-          </IconItem>
-          <IconItem>
-            <Icon className="material-symbols-outlined">person</Icon>
-          </IconItem>
-          <IconItem>
-            <Icon className="material-symbols-outlined">shopping_basket</Icon>
-          </IconItem>
-          <IconItem>
-            <Icon className="material-symbols-outlined">menu</Icon>
-          </IconItem>
-        </MenuBox>
-      </HeaderWrapper>
-    </HeaderContainer>
-  );
-};
-
-export default Header;
