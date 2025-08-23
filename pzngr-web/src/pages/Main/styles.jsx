@@ -1,6 +1,6 @@
 import styled from "styled-components";
 
-export const HomeContainer = styled.div`
+export const MainContainer = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
@@ -9,7 +9,7 @@ export const HomeContainer = styled.div`
   overflow: hidden;
 `;
 
-export const HomeImage = styled.img`
+export const MainImage = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
