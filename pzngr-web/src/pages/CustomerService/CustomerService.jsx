@@ -1,11 +1,15 @@
 import React from "react";
-import { CustomerServiceContainer, CustomerServiceText } from "./styles.jsx";
+import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.jsx";
+import Text from "../../components/atoms/Text/Text.jsx";
+import Container from "../../components/atoms/Container/Container.jsx";
 
 const CustomerService = () => {
   return (
-    <CustomerServiceContainer>
-      <CustomerServiceText>고객센터 페이지</CustomerServiceText>
-    </CustomerServiceContainer>
+    <PageTemplate>
+      <Container variant="center" padding="xxxxxl">
+        <Text size="xl" weight="bold">고객센터 페이지</Text>
+      </Container>
+    </PageTemplate>
   );
 };
 

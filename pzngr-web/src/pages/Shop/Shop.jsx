@@ -1,11 +1,15 @@
 import React from "react";
-import { ShopContainer, ShopText } from "./styles.jsx";
+import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.jsx";
+import Text from "../../components/atoms/Text/Text.jsx";
+import Container from "../../components/atoms/Container/Container.jsx";
 
 const Shop = () => {
   return (
-    <ShopContainer>
-      <ShopText>shop 페이지</ShopText>
-    </ShopContainer>
+    <PageTemplate>
+      <Container variant="center" padding="xxxxxl">
+        <Text size="xl" weight="bold">Shop 페이지</Text>
+      </Container>
+    </PageTemplate>
   );
 };
 
