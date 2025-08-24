@@ -47,8 +47,18 @@ const Header = () => {
           </LogoWrapper>
 
           <IconGroup>
-            <Icon name="person" size="large" clickable onClick={handleUserClick} />
-            <Icon name="shopping_basket" size="large" clickable onClick={handleCartClick} />
+            <Icon
+              name="person"
+              size="xLarge"
+              clickable
+              onClick={handleUserClick}
+            />
+            <Icon
+              name="shopping_basket"
+              size="xLarge"
+              clickable
+              onClick={handleCartClick}
+            />
           </IconGroup>
 
           <HamburgerMenu onClick={handleMobileMenuOpen}>
@@ -57,12 +67,11 @@ const Header = () => {
         </HeaderWrapper>
       </StyledHeader>
 
-      <MobileMenu 
-        isOpen={isMobileMenuOpen} 
-        onClose={handleMobileMenuClose} 
-      />
+      <MobileMenu isOpen={isMobileMenuOpen} onClose={handleMobileMenuClose} />
     </>
   );
 };
+
+Header.displayName = "Header";
 
 export default Header;

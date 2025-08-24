@@ -112,11 +112,21 @@ export const InfoRow = styled.div`
   gap: ${({ theme }) => theme.spacing.lg};
   align-items: flex-start;
   flex-wrap: wrap;
+  width: 100%;
 
   ${maxMedia.tablet`
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing.sm};
   `}
+  
+  /* 주소가 포함된 행은 전체 너비 사용 */
+  &:has([data-long-text="true"]) {
+    flex-direction: column;
+    
+    ${maxMedia.tablet`
+      flex-direction: column;
+    `}
+  }
 `;
 
 export const BottomSection = styled.div`

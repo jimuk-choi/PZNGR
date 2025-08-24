@@ -11,15 +11,17 @@ export const StyledHeader = styled.header`
 `;
 
 export const HeaderWrapper = styled.div`
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-areas: "left center right";
   align-items: center;
-  justify-content: space-between;
   width: 100%;
-  padding: 0 ${({ theme }) => theme.spacing.xxxxxl};
   height: 100%;
-  position: relative;
+  padding: 0 ${({ theme }) => theme.spacing.xxxxxl};
 
   ${maxMedia.tablet`
+    display: flex;
+    justify-content: space-between;
     padding: 0 ${({ theme }) => theme.spacing.xxxl};
   `}
 
@@ -29,9 +31,11 @@ export const HeaderWrapper = styled.div`
 `;
 
 export const MenuGroup = styled.div`
+  grid-area: left;
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing.xxxl};
+  justify-self: start;
 
   ${maxMedia.tablet`
     display: none;
@@ -39,23 +43,18 @@ export const MenuGroup = styled.div`
 `;
 
 export const LogoWrapper = styled.div`
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-
-  ${maxMedia.tablet`
-    position: static;
-    transform: none;
-    z-index: auto;
-  `}
+  grid-area: center;
+  display: flex;
+  justify-self: center;
+  align-items: center;
 `;
 
 export const IconGroup = styled.div`
+  grid-area: right;
   display: flex;
   align-items: center;
-  gap: 0;
+  gap: 8px;
+  justify-self: end;
 
   ${maxMedia.tablet`
     display: none;
@@ -64,7 +63,7 @@ export const IconGroup = styled.div`
 
 export const HamburgerMenu = styled.div`
   display: none;
-  
+
   ${maxMedia.tablet`
     display: flex;
     align-items: center;

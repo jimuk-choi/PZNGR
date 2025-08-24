@@ -9,3 +9,7 @@ export const MainImageSection = styled.section`
   background-size: 100% 161.53%;
   flex-shrink: 0;
 `;
+
+export const SectionSpacing = styled.div`
+  height: ${({ theme }) => theme.spacing.xxxxxxl};
+`;

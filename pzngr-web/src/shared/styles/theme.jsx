@@ -67,7 +67,7 @@ export const theme = {
       },
     },
     icon: {
-      xLarge: "36px",
+      xLarge: "32px",
       large: "24px",
       medium: "20px",
       small: "18px",

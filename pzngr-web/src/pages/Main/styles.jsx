@@ -336,8 +336,8 @@ export const FooterSection = styled.footer`
 
                 @media (max-width: ${breakpoints.mobile}) {
                   flex: 1;
-                  word-wrap: break-word;
-                  white-space: normal;
+                  /* word-wrap: break-word; */
+                  /* white-space: normal; */
                 }
               }
             }

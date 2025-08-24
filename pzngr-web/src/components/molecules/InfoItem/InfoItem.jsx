@@ -8,6 +8,7 @@ const InfoItem = ({
   direction = "column",
   className = "",
   children,
+  isLongText = false,
   ...props 
 }) => {
   if (children) {
@@ -17,6 +18,7 @@ const InfoItem = ({
         align="flex-start"
         gap="xs"
         className={className}
+        data-long-text={isLongText}
         {...props}
       >
         {children}
@@ -30,12 +32,28 @@ const InfoItem = ({
       align="flex-start"
       gap="xs"
       className={className}
+      data-long-text={isLongText}
+      style={isLongText ? { 
+        width: '100%', 
+        minWidth: 0,
+        wordWrap: 'break-word',
+        overflowWrap: 'break-word'
+      } : {}}
       {...props}
     >
       <Text variant="info-label" size="sm" weight="semibold">
         {label}
       </Text>
-      <Text size="sm" color="black">
+      <Text 
+        size="sm" 
+        color="black"
+        style={isLongText ? {
+          wordWrap: 'break-word',
+          overflowWrap: 'break-word',
+          whiteSpace: 'normal',
+          lineHeight: '1.4'
+        } : {}}
+      >
         {value}
       </Text>
     </Container>

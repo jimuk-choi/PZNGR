@@ -46,6 +46,7 @@ const Footer = () => {
                 <InfoItem 
                   label="사업장 주소" 
                   value="10113 경기도 김포시 풍무로 180 (풍무동) 풍무아도니스의꿈1" 
+                  isLongText={true}
                 />
               </InfoRow>
               <InfoRow>
