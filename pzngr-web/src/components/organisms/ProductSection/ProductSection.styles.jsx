@@ -50,7 +50,7 @@ export const ProductCard = styled.div`
 `;
 
 export const ProductImageWrapper = styled.div`
-  width: 80%;
+  width: 280px;
   aspect-ratio: 1;
   background: ${({ theme }) => theme.colors.white};
   display: flex;
@@ -84,7 +84,7 @@ export const ProductDetails = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
   flex: 1;
-  ${maxMedia.tablet`
+  ${maxMedia.desktopM`
     align-items: center
   `}
 `;
