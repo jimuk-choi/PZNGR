@@ -1,7 +1,7 @@
 import { css } from "styled-components";
 
 const sizes = {
-  mobile: 375, // Mobile max-width
+  mobile: 400 /* 375 */, // Mobile max-width
   tablet: 780, // Tablet max-width
   desktopM: 1440, // Desktop Medium max-width
 };
