@@ -1,14 +1,33 @@
 import React from "react";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.jsx";
-import Text from "../../components/atoms/Text/Text.jsx";
 import Container from "../../components/atoms/Container/Container.jsx";
+import Text from "../../components/atoms/Text/Text.jsx";
+import ProductCard from "../../components/molecules/ProductCard/ProductCard.jsx";
+import { products } from "../../shared/data/products.js";
+import {
+  ProductSectionContainer,
+  ProductTitle,
+  ProductBox,
+} from "../../components/organisms/ProductSection/ProductSection.styles.jsx";
 
 const Shop = () => {
   return (
     <PageTemplate>
-      <Container variant="center" padding="xxxxxl">
-        <Text size="xl" weight="bold">Shop 페이지</Text>
-      </Container>
+      <ProductSectionContainer>
+        <Container>
+          <ProductTitle>
+            <Text size="xxl" weight="semibold">
+              Shop
+            </Text>
+          </ProductTitle>
+
+          <ProductBox>
+            {products.map((product) => (
+              <ProductCard key={product.id} product={product} />
+            ))}
+          </ProductBox>
+        </Container>
+      </ProductSectionContainer>
     </PageTemplate>
   );
 };
