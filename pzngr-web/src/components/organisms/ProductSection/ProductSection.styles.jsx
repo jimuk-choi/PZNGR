@@ -5,6 +5,10 @@ export const ProductSectionContainer = styled.section`
   width: 100%;
   padding: ${({ theme }) => theme.spacing.xxxxxxl} 0
     ${({ theme }) => theme.spacing.xxxxxxl} 0;
+  ${maxMedia.mobile`
+    padding: ${({ theme }) => theme.spacing.xxxl} 0 ${({ theme }) =>
+    theme.spacing.xxxl} 0; 
+  `}
 `;
 
 export const ProductTitle = styled.div`
@@ -12,7 +16,7 @@ export const ProductTitle = styled.div`
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-bottom: ${({ theme }) => theme.spacing.xxxxl};
+  margin-bottom: ${({ theme }) => theme.spacing.xxxxxxxxxl};
 `;
 
 export const ProductBox = styled.div`
