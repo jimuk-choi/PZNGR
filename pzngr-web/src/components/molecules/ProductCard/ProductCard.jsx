@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import Text from "../../atoms/Text/Text.jsx";
 import { 
   CardContainer, 
@@ -11,8 +12,14 @@ import {
 } from "./ProductCard.styles.jsx";
 
 const ProductCard = ({ product }) => {
+  const navigate = useNavigate();
+
+  const handleCardClick = () => {
+    navigate(`/product/${product.slug}`);
+  };
+
   return (
-    <CardContainer>
+    <CardContainer onClick={handleCardClick}>
       <ImageWrapper>
         <ProductImage 
           src={product.image} 

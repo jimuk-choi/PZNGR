@@ -9,6 +9,14 @@ export const CardContainer = styled.div`
   background: ${({ theme }) => theme.colors.white};
   width: 384px;
   padding: 0 ${({ theme }) => theme.spacing.md};
+  cursor: pointer;
+  transition: ${({ theme }) => theme.transitions.fast};
+
+  &:hover {
+    /* transform: translateY(-2px); */
+    opacity: 0.9;
+  }
+
   ${maxMedia.mobile`
     gap: ${({ theme }) => theme.spacing.xs};
   `}
@@ -116,7 +124,7 @@ export const ActionButton = styled.button`
     height: 18px;
     padding: ${({ theme }) => theme.spacing.xs};
   `}
-  
+
   svg {
     width: 100%;
     height: 100%;
