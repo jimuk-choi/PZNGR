@@ -290,7 +290,7 @@ export const OPTION_TYPE = {
  * @returns {Object} 상품 옵션 객체
  */
 export const createProductOption = (name, type = OPTION_TYPE.SELECT, required = false) => ({
-  id: `option_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  id: `option_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
   name,
   type,
   required,
@@ -306,7 +306,7 @@ export const createProductOption = (name, type = OPTION_TYPE.SELECT, required = 
  * @returns {Object} 옵션 값 객체
  */
 export const createOptionValue = (name, additionalPrice = 0, image = '', stock = 0) => ({
-  id: `value_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  id: `value_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
   name,
   additionalPrice,
   image,

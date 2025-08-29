@@ -175,7 +175,7 @@ export const createInventoryMovement = (
   createdBy, 
   reference = ''
 ) => ({
-  id: `movement_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  id: `movement_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
   inventoryItemId,
   productId,
   type,
@@ -338,6 +338,9 @@ export const checkInventoryAlerts = (inventoryItem, alerts) => {
           break;
         case 'overstock':
           shouldTrigger = inventoryItem.stock.available >= alert.threshold;
+          break;
+        default:
+          shouldTrigger = false;
           break;
       }
       

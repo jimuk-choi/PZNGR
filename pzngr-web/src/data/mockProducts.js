@@ -10,7 +10,7 @@ import {
   createOptionValue 
 } from '../models/Product';
 
-import { INVENTORY_STATUS } from '../models/Inventory';
+// import { INVENTORY_STATUS } from '../models/Inventory'; // 현재 미사용
 
 // 기존 PZNGR 이미지 import
 import DACT from "../components/atoms/Image/DA_CT.jpg";

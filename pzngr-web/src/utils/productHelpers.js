@@ -22,7 +22,7 @@ export const createProduct = (productData, existingProducts = []) => {
   
   // ID가 없으면 생성
   if (!product.id) {
-    product.id = `prod_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    product.id = `prod_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`;
   }
   
   // 현재 시간으로 생성/수정일 설정

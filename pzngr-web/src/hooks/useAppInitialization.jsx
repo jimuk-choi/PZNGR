@@ -22,7 +22,7 @@ export const useAppInitialization = () => {
     initializationError
   } = useAppStore();
   
-  const { resetProducts, setProducts } = useProductStore();
+  const { setProducts } = useProductStore();
 
   // Zustand persist 하이드레이션 완료 확인
   useEffect(() => {

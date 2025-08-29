@@ -20,13 +20,12 @@ export const useCartStore = create(
       addToCart: (product, quantity = 1, selectedOptions = []) => {
         const { items } = get();
         
-        // 옵션까지 고려한 고유 식별자 생성
-        const optionKey = selectedOptions
-          .map(opt => `${opt.optionType}:${opt.optionValue}`)
-          .sort()
-          .join('|');
-        
-        const itemKey = `${product.id}_${optionKey}`;
+        // 옵션까지 고려한 고유 식별자 생성 (향후 사용 예정)
+        // const optionKey = selectedOptions
+        //   .map(opt => `${opt.optionType}:${opt.optionValue}`)
+        //   .sort()
+        //   .join('|');
+        // const itemKey = `${product.id}_${optionKey}`;  // 향후 사용 예정
         
         // 같은 상품, 같은 옵션 조합인지 확인
         const existingItem = items.find(item => 
@@ -49,7 +48,7 @@ export const useCartStore = create(
         } else {
           // 새 아이템 추가
           const newItem = {
-            id: `cart_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            id: `cart_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
             productId: product.id,
             name: product.name,
             price: product.price,

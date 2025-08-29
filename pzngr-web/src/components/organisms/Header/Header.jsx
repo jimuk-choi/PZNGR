@@ -43,7 +43,7 @@ const Header = () => {
         <HeaderWrapper>
           <MenuGroup>
             <MenuItem to="/shop">SHOP</MenuItem>
-            <MenuItem to="/customer-service">고객센터11</MenuItem>
+            <MenuItem to="/customer-service">고객센터</MenuItem>
           </MenuGroup>
 
           <LogoWrapper>

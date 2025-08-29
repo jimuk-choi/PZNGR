@@ -88,7 +88,7 @@ export const createEmptyCategory = () => ({
  * @returns {Object} 카테고리 필터 객체
  */
 export const createCategoryFilter = (name, type, options = []) => ({
-  id: `filter_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+  id: `filter_${Date.now()}_${Math.random().toString(36).substring(2, 11)}`,
   name,
   type,
   options
@@ -386,8 +386,10 @@ export const getCategoryPath = (categories, categoryId) => {
   const path = [];
   let currentId = categoryId;
   
+  const findCategory = (id) => categories.find(cat => cat.id === id);
+  
   while (currentId) {
-    const category = categories.find(cat => cat.id === currentId);
+    const category = findCategory(currentId);
     if (!category) break;
     
     path.unshift(category);
