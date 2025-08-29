@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Container from "../../atoms/Container/Container.jsx";
 import Text from "../../atoms/Text/Text.jsx";
 import ProductCard from "../../molecules/ProductCard/ProductCard.jsx";
-import { products } from "../../../shared/data/products.js";
+import { mockProducts } from "../../../data/mockProducts.js";
 import {
   ProductSectionContainer,
   ProductTitle,
@@ -33,9 +33,9 @@ const ProductSection = () => {
 
   const getDisplayedProducts = () => {
     if (isMobile) {
-      return products.slice(0, 3);
+      return mockProducts.slice(0, 3);
     }
-    return products.slice(0, 7);
+    return mockProducts.slice(0, 7);
   };
 
   return (
@@ -56,7 +56,7 @@ const ProductSection = () => {
           ))}
         </ProductBox>
 
-        {isMobile && products.length > 3 && (
+        {isMobile && mockProducts.length > 3 && (
           <ShowMoreButton onClick={handleShowMore}>
             <Text size="sm" weight="normal">
               더보기

@@ -73,3 +73,25 @@ export const HamburgerMenu = styled.div`
     cursor: pointer;
   `}
 `;
+
+export const CartIconWrapper = styled.div`
+  position: relative;
+  cursor: pointer;
+`;
+
+export const CartBadge = styled.div`
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background-color: ${({ theme }) => theme.colors.primary || '#000'};
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: bold;
+  z-index: 10;
+`;

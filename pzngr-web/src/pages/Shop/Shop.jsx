@@ -3,7 +3,7 @@ import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.j
 import Container from "../../components/atoms/Container/Container.jsx";
 import Text from "../../components/atoms/Text/Text.jsx";
 import ProductCard from "../../components/molecules/ProductCard/ProductCard.jsx";
-import { products } from "../../shared/data/products.js";
+import { mockProducts } from "../../data/mockProducts.js";
 import {
   ProductSectionContainer,
   ProductTitle,
@@ -22,7 +22,7 @@ const Shop = () => {
           </ProductTitle>
 
           <ProductBox>
-            {products.map((product) => (
+            {mockProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}
           </ProductBox>

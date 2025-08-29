@@ -4,6 +4,7 @@ import Icon from "../../atoms/Icon/Icon.jsx";
 import Logo from "../../molecules/Logo/Logo.jsx";
 import MenuItem from "../../molecules/MenuItem/MenuItem.jsx";
 import MobileMenu from "../MobileMenu/MobileMenu.jsx";
+import { useCartStore } from "../../../stores/cartStore.js";
 import {
   StyledHeader,
   HeaderWrapper,
@@ -11,11 +12,14 @@ import {
   LogoWrapper,
   IconGroup,
   HamburgerMenu,
+  CartIconWrapper,
+  CartBadge,
 } from "./Header.styles.jsx";
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { totalCount } = useCartStore();
 
   const handleMobileMenuOpen = () => {
     setIsMobileMenuOpen(true);
@@ -53,12 +57,17 @@ const Header = () => {
               clickable
               onClick={handleUserClick}
             />
-            <Icon
-              name="shopping_basket"
-              size="xLarge"
-              clickable
-              onClick={handleCartClick}
-            />
+            <CartIconWrapper onClick={handleCartClick}>
+              <Icon
+                name="shopping_basket"
+                size="xLarge"
+                clickable
+                onClick={handleCartClick}
+              />
+              {totalCount > 0 && (
+                <CartBadge>{totalCount > 99 ? '99+' : totalCount}</CartBadge>
+              )}
+            </CartIconWrapper>
           </IconGroup>
 
           <HamburgerMenu onClick={handleMobileMenuOpen}>

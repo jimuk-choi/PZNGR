@@ -15,15 +15,15 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const handleCardClick = () => {
-    navigate(`/product/${product.slug}`);
+    navigate(`/product/${product.seo?.slug || product.id}`);
   };
 
   return (
     <CardContainer onClick={handleCardClick}>
       <ImageWrapper>
         <ProductImage 
-          src={product.image} 
-          alt={product.imageAlt}
+          src={product.images?.main || product.image} 
+          alt={product.name}
         />
       </ImageWrapper>
       <InfoSection>
@@ -32,7 +32,12 @@ const ProductCard = ({ product }) => {
             <Text weight="normal">{product.name}</Text>
           </ProductName>
           <ProductPrice>
-            <Text weight="bold">{product.price}</Text>
+            <Text weight="bold">
+              {typeof product.price === 'string' 
+                ? product.price 
+                : `${(product.price.sale || product.price.regular).toLocaleString('ko-KR')} 원`
+              }
+            </Text>
           </ProductPrice>
         </ProductInfo>
       </InfoSection>
