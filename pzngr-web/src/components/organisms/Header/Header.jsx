@@ -43,7 +43,7 @@ const Header = () => {
         <HeaderWrapper>
           <MenuGroup>
             <MenuItem to="/shop">SHOP</MenuItem>
-            <MenuItem to="/customer-service">고객센터</MenuItem>
+            <MenuItem to="/customer-service">고객센터11</MenuItem>
           </MenuGroup>
 
           <LogoWrapper>
@@ -65,7 +65,7 @@ const Header = () => {
                 onClick={handleCartClick}
               />
               {totalCount > 0 && (
-                <CartBadge>{totalCount > 99 ? '99+' : totalCount}</CartBadge>
+                <CartBadge>{totalCount > 99 ? "99+" : totalCount}</CartBadge>
               )}
             </CartIconWrapper>
           </IconGroup>
