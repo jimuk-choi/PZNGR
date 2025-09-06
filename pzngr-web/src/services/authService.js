@@ -4,6 +4,7 @@
 
 import { getUserByEmail, mockUsers } from '../data/mockUsers';
 import { hashPasswordWithValidation, verifyPasswordSmart } from '../utils/passwordUtils';
+import { generateTokenPair } from '../utils/jwtUtils';
 
 // 이메일 중복 체크
 export const checkEmailDuplicate = async (email) => {
@@ -189,10 +190,30 @@ export const loginUser = async (email, password) => {
     // 로그인 시간 업데이트
     user.lastLoginAt = new Date().toISOString();
     
+    // JWT 토큰 쌍 생성
+    console.log('🎫 JWT 토큰 생성 중...');
+    const tokenResult = await generateTokenPair({
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+      sub: user.id, // JWT 표준 subject
+      sessionId: `session_${Date.now()}_${user.id}`
+    });
+    
+    if (!tokenResult.success) {
+      console.error('❌ JWT 토큰 생성 실패:', tokenResult.error);
+      return {
+        success: false,
+        message: '인증 토큰 생성에 실패했습니다. 다시 시도해 주세요.'
+      };
+    }
+    
     console.log('✅ 로그인 성공:', {
       email: user.email,
       name: user.name,
-      passwordUpgraded: passwordVerification.needsUpgrade ? '✓' : 'N/A'
+      passwordUpgraded: passwordVerification.needsUpgrade ? '✓' : 'N/A',
+      tokensGenerated: '✓'
     });
     
     return {
@@ -205,6 +226,7 @@ export const loginUser = async (email, password) => {
         role: user.role,
         isAdmin: user.role === 'admin'
       },
+      tokens: tokenResult.tokens,
       message: '로그인이 완료되었습니다.'
     };
     

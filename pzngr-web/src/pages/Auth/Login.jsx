@@ -81,11 +81,23 @@ const Login = () => {
       const authResult = await loginUser(formData.email, formData.password);
       
       if (authResult.success) {
+        // authResult에 사용자 정보와 JWT 토큰이 포함됨
+        const userDataWithTokens = {
+          ...authResult.user,
+          tokens: authResult.tokens // JWT 토큰 정보 포함
+        };
+        
         // userStore를 통한 로그인 처리 (게스트 데이터 마이그레이션 포함)
-        const loginResult = await login(authResult.user, true);
+        const loginResult = await login(userDataWithTokens, true);
         
         if (loginResult.success) {
           setSubmitMessage('로그인이 완료되었습니다!');
+          console.log('✅ Login successful with JWT tokens:', {
+            user: loginResult.user.email,
+            tokenType: authResult.tokens?.tokenType,
+            hasAccessToken: !!authResult.tokens?.accessToken,
+            hasRefreshToken: !!authResult.tokens?.refreshToken
+          });
           
           // 1초 후 메인 페이지로 이동
           setTimeout(() => {

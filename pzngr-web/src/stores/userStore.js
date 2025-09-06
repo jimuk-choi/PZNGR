@@ -13,6 +13,14 @@ import {
   MIGRATION_STATUS,
   MigrationProgressTracker
 } from '../utils/dataMigrationService';
+import { 
+  saveTokens, 
+  clearTokens, 
+  getTokenStatus,
+  validateAccessToken,
+  getValidAccessToken,
+  setupTokenExpirationNotification
+} from '../utils/tokenManager';
 
 // 초기 상태
 const initialState = {
@@ -20,6 +28,7 @@ const initialState = {
   user: null,
   guestSession: null,
   sessionType: 'none', // 'none', 'guest', 'user'
+  tokenExpirationNotifier: null,
 };
 
 // 사용자 상태 관리 store
@@ -30,7 +39,7 @@ export const useUserStore = create(
       ...initialState,
 
       // 앱 초기화시 세션 정리 및 복구
-      initializeSession: () => {
+      initializeSession: async () => {
         console.log('🔧 Initializing user session...');
         
         // 세션 정리
@@ -38,17 +47,56 @@ export const useUserStore = create(
         
         const state = get();
         
-        // 이미 로그인된 상태면 user 세션으로 설정
+        // JWT 토큰 상태 확인
+        const tokenStatus = await getTokenStatus();
+        console.log('🎫 Token status on init:', tokenStatus.status);
+        
+        // 이미 로그인된 상태면 토큰 유효성 검사
         if (state.isLoggedIn && state.user) {
-          set({ 
-            sessionType: 'user',
-            guestSession: null 
-          });
-          console.log('✅ User session restored:', state.user.email);
-          
-          // 장바구니 세션 초기화
-          get().initializeCartSession(state.user.id, 'user');
-          return;
+          if (tokenStatus.hasTokens && tokenStatus.status === 'valid') {
+            // 유효한 토큰이 있으면 세션 복원
+            set({ 
+              sessionType: 'user',
+              guestSession: null 
+            });
+            console.log('✅ User session restored with valid tokens:', state.user.email);
+            
+            // 토큰 만료 알림 설정
+            get().setupTokenExpirationHandler();
+            
+            // 장바구니 세션 초기화
+            get().initializeCartSession(state.user.id, 'user');
+            return;
+          } else if (tokenStatus.status === 'needs_refresh') {
+            // 토큰 갱신 시도
+            console.log('🔄 Attempting token refresh on session init...');
+            const refreshResult = await getValidAccessToken();
+            
+            if (refreshResult.success) {
+              set({ 
+                sessionType: 'user',
+                guestSession: null 
+              });
+              console.log('✅ User session restored after token refresh:', state.user.email);
+              
+              // 토큰 만료 알림 설정
+              get().setupTokenExpirationHandler();
+              
+              // 장바구니 세션 초기화
+              get().initializeCartSession(state.user.id, 'user');
+              return;
+            } else {
+              // 토큰 갱신 실패 - 로그아웃 처리
+              console.warn('⚠️ Token refresh failed on init - logging out');
+              get().logout();
+              return;
+            }
+          } else {
+            // 토큰이 유효하지 않으면 로그아웃 처리
+            console.warn('⚠️ Invalid tokens on init - logging out');
+            get().logout();
+            return;
+          }
         }
         
         // 기존 게스트 세션 확인
@@ -166,6 +214,21 @@ export const useUserStore = create(
           }
         }
         
+        // JWT 토큰 저장 (userData에 토큰이 포함되어 있다고 가정)
+        if (userData.tokens) {
+          console.log('🔐 Saving JWT tokens...');
+          const tokenSaveResult = saveTokens(userData.tokens);
+          
+          if (!tokenSaveResult.success) {
+            console.error('❌ Failed to save tokens:', tokenSaveResult.error);
+            return {
+              success: false,
+              error: 'Token storage failed',
+              details: tokenSaveResult.error
+            };
+          }
+        }
+        
         // 사용자 상태 설정
         set({
           isLoggedIn: true,
@@ -187,12 +250,15 @@ export const useUserStore = create(
           },
         });
         
+        // 토큰 만료 알림 설정
+        get().setupTokenExpirationHandler();
+        
         // 세션 초기화 (약간의 지연 후 - 마이그레이션 완료 후)
         setTimeout(() => {
           get().initializeCartSession(userData.id, 'user');
         }, 200);
         
-        console.log('✅ User login completed with comprehensive migration');
+        console.log('✅ User login completed with comprehensive migration and JWT tokens');
         return {
           success: true,
           migrationResult: comprehensiveMigrationResult,
@@ -200,12 +266,20 @@ export const useUserStore = create(
             id: userData.id,
             name: userData.name,
             email: userData.email
-          }
+          },
+          tokens: userData.tokens
         };
       },
 
       logout: () => {
         console.log('👋 User logout initiated');
+        
+        // JWT 토큰 정리
+        clearTokens();
+        
+        // 토큰 만료 알림 정리
+        get().clearTokenExpirationHandler();
+        
         set({
           ...initialState,
           sessionType: 'guest'
@@ -217,7 +291,7 @@ export const useUserStore = create(
         // 새로운 게스트 장바구니 세션 초기화
         get().initializeCartSession(newGuestSession.id, 'guest');
         
-        console.log('✅ User logout completed, new guest session created');
+        console.log('✅ User logout completed, tokens cleared, new guest session created');
       },
 
       updateUser: (userData) => {
@@ -328,6 +402,92 @@ export const useUserStore = create(
           completedAt: user.migrationData.completedAt,
           rollbackCompleted: user.migrationData.rollbackCompleted
         };
+      },
+
+      // JWT 토큰 관리 함수들
+      
+      // 토큰 만료 알림 핸들러 설정
+      setupTokenExpirationHandler: () => {
+        const { tokenExpirationNotifier } = get();
+        
+        // 이미 설정되어 있으면 정리 후 재설정
+        if (tokenExpirationNotifier) {
+          tokenExpirationNotifier();
+        }
+        
+        const cleanup = setupTokenExpirationNotification((event) => {
+          console.log('🔔 Token expiration event:', event.type);
+          
+          if (event.type === 'expiration_warning') {
+            // 토큰 만료 5분 전 경고
+            console.warn('⚠️ Token will expire in', event.willExpireIn.minutes, 'minutes');
+            
+            // 커스텀 이벤트 발행 (UI에서 알림 표시 가능)
+            window.dispatchEvent(new CustomEvent('token-expiration-warning', {
+              detail: event
+            }));
+            
+          } else if (event.type === 'token_expired') {
+            // 토큰 만료됨
+            console.warn('⚠️ Tokens expired - user will be logged out');
+            
+            // 로그아웃 처리
+            get().logout();
+            
+            // 커스텀 이벤트 발행
+            window.dispatchEvent(new CustomEvent('token-expired', {
+              detail: { message: 'Session expired - please log in again' }
+            }));
+          }
+        });
+        
+        set({ tokenExpirationNotifier: cleanup });
+        console.log('🔔 Token expiration handler setup complete');
+      },
+      
+      // 토큰 만료 알림 핸들러 정리
+      clearTokenExpirationHandler: () => {
+        const { tokenExpirationNotifier } = get();
+        if (tokenExpirationNotifier) {
+          tokenExpirationNotifier();
+          set({ tokenExpirationNotifier: null });
+          console.log('🔔 Token expiration handler cleared');
+        }
+      },
+      
+      // 토큰 상태 조회
+      getTokenStatus: async () => {
+        return await getTokenStatus();
+      },
+      
+      // 유효한 액세스 토큰 가져오기 (자동 갱신 포함)
+      getValidAccessToken: async () => {
+        return await getValidAccessToken();
+      },
+      
+      // 토큰 수동 갱신
+      refreshTokens: async () => {
+        console.log('🔄 Manual token refresh initiated...');
+        const refreshResult = await getValidAccessToken();
+        
+        if (refreshResult.success) {
+          console.log('✅ Manual token refresh successful');
+          return { success: true, wasRefreshed: refreshResult.wasRefreshed };
+        } else {
+          console.error('❌ Manual token refresh failed:', refreshResult.error);
+          
+          if (refreshResult.needsLogin) {
+            // 토큰 갱신 실패 - 로그아웃 필요
+            get().logout();
+            return { 
+              success: false, 
+              error: 'Session expired - logged out automatically',
+              needsLogin: true 
+            };
+          }
+          
+          return { success: false, error: refreshResult.error };
+        }
       },
     }),
     {
