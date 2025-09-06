@@ -1,8 +1,5 @@
 import styled from "styled-components";
 
-const underlineDefault = "http://localhost:3845/assets/03aea4e981334f84dae8abe1fe83caa0840343c6.svg";
-const underlineHovered = "http://localhost:3845/assets/503b522eba8da988b8f962ce8deacb71ddeeda05.svg";
-
 export const StyledButton = styled.button`
   display: flex;
   flex-direction: column;
@@ -36,24 +33,20 @@ export const StyledButton = styled.button`
       left: 0;
       width: 100%;
       height: 1px;
-      background-image: url(${underlineDefault});
-      background-size: cover;
-      background-repeat: no-repeat;
+      background-color: ${({ theme }) => theme.colors.black || '#000'};
       opacity: ${props => props.state === "hovered" ? 1 : 0};
-      transition: opacity ${({ theme }) => theme.transitions.fast};
+      transition: opacity ${({ theme }) => theme.transitions.fast || '0.3s ease'};
     }
   }
 
   &:hover {
     .underline::after {
-      background-image: url(${underlineHovered});
       opacity: 1;
     }
   }
 
   ${props => props.state === "hovered" && `
     .underline::after {
-      background-image: url(${underlineHovered});
       opacity: 1;
     }
   `}

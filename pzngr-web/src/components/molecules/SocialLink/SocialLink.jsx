@@ -1,10 +1,9 @@
 import React from "react";
-import Image from "../../atoms/Image/Image.jsx";
 import Container from "../../atoms/Container/Container.jsx";
 
 const SocialLink = ({ 
   href,
-  icon,
+  icon: IconComponent,
   alt,
   className = "",
   ...props 
@@ -18,11 +17,7 @@ const SocialLink = ({
       className={className}
       {...props}
     >
-      <Image 
-        src={icon} 
-        alt={alt} 
-        variant="icon"
-      />
+      {IconComponent && <IconComponent alt={alt} width="20" height="20" />}
     </Container>
   );
 };

@@ -235,16 +235,6 @@ const Login = () => {
               </Button>
             </div>
 
-            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
-              <Button
-                type="button"
-                variant="text"
-                onClick={() => navigate('/forgot-password')}
-                disabled={isSubmitting}
-              >
-                비밀번호를 잊으셨나요?
-              </Button>
-            </div>
 
             {/* 개발용: 테스트 계정 목록 */}
             {testUsers.length > 0 && (
