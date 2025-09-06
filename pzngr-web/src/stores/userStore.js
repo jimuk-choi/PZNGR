@@ -5,7 +5,6 @@ import {
   createGuestSession, 
   getCurrentGuestSession, 
   hasActiveGuestSession,
-  migrateGuestToUser,
   updateSessionActivity,
   initializeSessionCleanup
 } from '../utils/sessionManager';

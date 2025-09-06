@@ -2,7 +2,7 @@
 // 비회원 → 회원 데이터 마이그레이션 서비스
 // ========================================
 
-import { migrateGuestToUser, getSessionData } from './sessionManager';
+import { migrateGuestToUser } from './sessionManager';
 
 // 마이그레이션 결과 상수
 export const MIGRATION_STATUS = {
@@ -126,6 +126,10 @@ export const migrateGuestDataToUser = async (userData, options = {}) => {
               type: migrationType,
               details: migrationStatus.conflict
             });
+            break;
+          default:
+            migrationResult.summary.failed++;
+            migrationResult.errors.push(`${migrationType}: Unknown migration status`);
             break;
         }
         
