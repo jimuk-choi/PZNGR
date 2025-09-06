@@ -95,3 +95,73 @@ export const CartBadge = styled.div`
   font-weight: bold;
   z-index: 10;
 `;
+
+export const UserSection = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 12px;
+`;
+
+export const UserInfo = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 14px;
+  
+  .user-name {
+    font-weight: 500;
+    color: ${({ theme }) => theme.colors.text || '#333'};
+  }
+  
+  .user-status {
+    font-size: 12px;
+    color: ${({ theme }) => theme.colors.textSecondary || '#666'};
+  }
+`;
+
+export const AuthButtons = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  
+  button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 4px;
+    font-size: 14px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    
+    &.login-btn {
+      background-color: transparent;
+      color: ${({ theme }) => theme.colors.text || '#333'};
+      border: 1px solid ${({ theme }) => theme.colors.border || '#ddd'};
+      
+      &:hover {
+        background-color: ${({ theme }) => theme.colors.background || '#f8f9fa'};
+      }
+    }
+    
+    &.register-btn {
+      background-color: ${({ theme }) => theme.colors.primary || '#000'};
+      color: white;
+      
+      &:hover {
+        background-color: ${({ theme }) => theme.colors.primaryDark || '#333'};
+      }
+    }
+    
+    &.logout-btn {
+      background-color: transparent;
+      color: ${({ theme }) => theme.colors.textSecondary || '#666'};
+      font-size: 12px;
+      padding: 4px 8px;
+      
+      &:hover {
+        color: ${({ theme }) => theme.colors.text || '#333'};
+        background-color: ${({ theme }) => theme.colors.background || '#f8f9fa'};
+      }
+    }
+  }
+`;

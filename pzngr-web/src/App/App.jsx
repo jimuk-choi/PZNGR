@@ -12,6 +12,7 @@ import ProductDetail from "../pages/ProductDetail";
 import CustomerService from "../pages/CustomerService";
 import Cart from "../pages/Cart";
 import MyPage from "../pages/MyPage";
+import { Login, Register } from "../pages/Auth";
 
 function App() {
   const {
@@ -61,6 +62,8 @@ function App() {
             <Route path="/customer-service" element={<CustomerService />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/my-page" element={<MyPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
           </Routes>
         </Router>
       </ThemeProvider>

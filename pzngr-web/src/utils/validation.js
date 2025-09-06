@@ -46,7 +46,7 @@ export const validatePassword = (password) => {
   result.checks.uppercase = /[A-Z]/.test(password);
   result.checks.lowercase = /[a-z]/.test(password);
   result.checks.number = /\d/.test(password);
-  result.checks.special = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  result.checks.special = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(password);
 
   // 통과한 조건의 개수
   const passedChecks = Object.values(result.checks).filter(Boolean).length;
