@@ -17,7 +17,6 @@ import {
   saveTokens, 
   clearTokens, 
   getTokenStatus,
-  validateAccessToken,
   getValidAccessToken,
   setupTokenExpirationNotification
 } from '../utils/tokenManager';
