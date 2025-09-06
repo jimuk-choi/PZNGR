@@ -488,6 +488,27 @@ export const useUserStore = create(
           return { success: false, error: refreshResult.error };
         }
       },
+      
+      // 사용자 정보 업데이트
+      updateUserInfo: (updatedUserData) => {
+        const currentState = get();
+        
+        if (!currentState.isLoggedIn || !currentState.user) {
+          console.error('❌ Cannot update user info: not logged in');
+          return { success: false, error: 'User not logged in' };
+        }
+        
+        const updatedUser = {
+          ...currentState.user,
+          ...updatedUserData,
+          updatedAt: new Date().toISOString()
+        };
+        
+        set({ user: updatedUser });
+        
+        console.log('✅ User info updated in store:', updatedUser.email);
+        return { success: true, user: updatedUser };
+      },
     }),
     {
       name: 'user-storage',

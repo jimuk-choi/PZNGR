@@ -2,8 +2,8 @@
 // 인증 관련 서비스 함수들
 // ========================================
 
-import { getUserByEmail, mockUsers } from '../data/mockUsers';
-import { hashPasswordWithValidation, verifyPasswordSmart } from '../utils/passwordUtils';
+import { getUserByEmail, getUserById, mockUsers } from '../data/mockUsers';
+import { hashPasswordWithValidation, verifyPasswordSmart, hashPassword } from '../utils/passwordUtils';
 import { generateTokenPair, generateToken } from '../utils/jwtUtils';
 
 // 이메일 중복 체크
@@ -529,4 +529,267 @@ export const cleanupExpiredTokens = () => {
   }
   
   return cleanedCount;
+};
+
+// ========================
+// 회원 정보 수정 관련 함수들
+// ========================
+
+// 회원 정보 업데이트
+export const updateUserProfile = async (userId, profileData) => {
+  try {
+    console.log('👤 회원 정보 업데이트 중...', { userId, profileData: { ...profileData, password: undefined } });
+    
+    // 실제 API 호출을 모방하기 위해 약간의 지연 추가
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const user = getUserById(userId);
+    if (!user) {
+      return {
+        success: false,
+        message: '사용자를 찾을 수 없습니다.'
+      };
+    }
+    
+    // 이메일 변경 시 중복 체크
+    if (profileData.email && profileData.email !== user.email) {
+      const emailExists = getUserByEmail(profileData.email);
+      if (emailExists && emailExists.id !== userId) {
+        return {
+          success: false,
+          message: '이미 사용 중인 이메일 주소입니다.'
+        };
+      }
+    }
+    
+    // 사용자 정보 업데이트
+    const updatedUser = {
+      ...user,
+      name: profileData.name || user.name,
+      email: profileData.email || user.email,
+      phone: profileData.phone || user.phone,
+      birthDate: profileData.birthDate || user.birthDate,
+      updatedAt: new Date().toISOString()
+    };
+    
+    // 메모리에서 사용자 정보 업데이트 (실제로는 mockUsers 배열에서 업데이트)
+    const userIndex = mockUsers.findIndex(u => u.id === userId);
+    if (userIndex >= 0) {
+      mockUsers[userIndex] = updatedUser;
+    }
+    
+    console.log('✅ 회원 정보 업데이트 성공:', updatedUser.email);
+    
+    return {
+      success: true,
+      message: '회원 정보가 성공적으로 업데이트되었습니다.',
+      user: {
+        id: updatedUser.id,
+        email: updatedUser.email,
+        name: updatedUser.name,
+        phone: updatedUser.phone,
+        birthDate: updatedUser.birthDate,
+        role: updatedUser.role,
+        updatedAt: updatedUser.updatedAt
+      }
+    };
+    
+  } catch (error) {
+    console.error('❌ 회원 정보 업데이트 오류:', error);
+    return {
+      success: false,
+      message: '회원 정보 업데이트 중 오류가 발생했습니다. 다시 시도해 주세요.'
+    };
+  }
+};
+
+// 비밀번호 변경
+export const changePassword = async (email, currentPassword, newPassword) => {
+  try {
+    console.log('🔐 비밀번호 변경 중...', { email });
+    
+    // 실제 API 호출을 모방하기 위해 약간의 지연 추가
+    await new Promise(resolve => setTimeout(resolve, 800));
+    
+    const user = getUserByEmail(email.toLowerCase().trim());
+    if (!user) {
+      return {
+        success: false,
+        message: '사용자를 찾을 수 없습니다.'
+      };
+    }
+    
+    // 현재 비밀번호 확인
+    const passwordVerification = await verifyPasswordSmart(currentPassword, user.password);
+    if (!passwordVerification.isValid) {
+      return {
+        success: false,
+        message: '현재 비밀번호가 올바르지 않습니다.'
+      };
+    }
+    
+    // 새 비밀번호 암호화
+    const hashedNewPassword = await hashPassword(newPassword);
+    
+    // 사용자 비밀번호 업데이트
+    user.password = hashedNewPassword;
+    user.updatedAt = new Date().toISOString();
+    
+    console.log('✅ 비밀번호 변경 성공:', user.email);
+    
+    return {
+      success: true,
+      message: '비밀번호가 성공적으로 변경되었습니다.',
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      }
+    };
+    
+  } catch (error) {
+    console.error('❌ 비밀번호 변경 오류:', error);
+    return {
+      success: false,
+      message: '비밀번호 변경 중 오류가 발생했습니다. 다시 시도해 주세요.'
+    };
+  }
+};
+
+// ========================
+// 회원 탈퇴 관련 함수들
+// ========================
+
+// 회원 탈퇴 처리
+export const deleteUserAccount = async (email, password, reason) => {
+  try {
+    console.log('🗑️ 회원 탈퇴 처리 중...', { email, reason });
+    
+    // 실제 API 호출을 모방하기 위해 약간의 지연 추가
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const user = getUserByEmail(email.toLowerCase().trim());
+    if (!user) {
+      return {
+        success: false,
+        message: '사용자를 찾을 수 없습니다.'
+      };
+    }
+    
+    // 현재 비밀번호 확인
+    const passwordVerification = await verifyPasswordSmart(password, user.password);
+    if (!passwordVerification.isValid) {
+      return {
+        success: false,
+        message: '현재 비밀번호가 올바르지 않습니다.'
+      };
+    }
+    
+    // 사용자 계정 비활성화 (완전 삭제 대신 상태 변경)
+    user.status = 'deleted';
+    user.deletedAt = new Date().toISOString();
+    user.deletionReason = reason;
+    user.updatedAt = new Date().toISOString();
+    
+    // 개인정보 익명화 처리 (GDPR 준수)
+    const anonymizedUser = {
+      ...user,
+      name: '탈퇴한 사용자',
+      phone: null,
+      birthDate: null,
+      // 이메일은 중복 가입 방지를 위해 해시로 변경
+      email: `deleted_${user.id}@deleted.local`,
+      password: null, // 비밀번호 완전 삭제
+    };
+    
+    // mockUsers에서 사용자 정보 업데이트
+    const userIndex = mockUsers.findIndex(u => u.id === user.id);
+    if (userIndex >= 0) {
+      mockUsers[userIndex] = anonymizedUser;
+    }
+    
+    console.log('✅ 회원 탈퇴 완료:', user.email, '→', anonymizedUser.email);
+    
+    // 탈퇴 로그 기록 (실제 환경에서는 별도 로그 시스템)
+    console.log('📊 탈퇴 통계:', {
+      userId: user.id,
+      originalEmail: email,
+      reason: reason,
+      deletedAt: anonymizedUser.deletedAt,
+      accountAge: calculateAccountAge(user.createdAt)
+    });
+    
+    return {
+      success: true,
+      message: '회원 탈퇴가 완료되었습니다.',
+      deletedUser: {
+        id: user.id,
+        deletedAt: anonymizedUser.deletedAt,
+        reason: reason
+      }
+    };
+    
+  } catch (error) {
+    console.error('❌ 회원 탈퇴 처리 오류:', error);
+    return {
+      success: false,
+      message: '회원 탈퇴 처리 중 오류가 발생했습니다. 고객센터에 문의해 주세요.'
+    };
+  }
+};
+
+// 계정 사용 기간 계산 헬퍼 함수
+const calculateAccountAge = (createdAt) => {
+  const created = new Date(createdAt);
+  const now = new Date();
+  const diffTime = Math.abs(now - created);
+  const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  
+  if (diffDays < 30) {
+    return `${diffDays}일`;
+  } else if (diffDays < 365) {
+    return `${Math.floor(diffDays / 30)}개월`;
+  } else {
+    return `${Math.floor(diffDays / 365)}년`;
+  }
+};
+
+// 탈퇴한 사용자 복구 (관리자 전용, 30일 이내)
+export const restoreDeletedUser = async (userId, adminId) => {
+  try {
+    console.log('🔄 탈퇴 사용자 복구 시도:', { userId, adminId });
+    
+    const user = getUserById(userId);
+    if (!user || user.status !== 'deleted') {
+      return {
+        success: false,
+        message: '복구할 수 있는 사용자를 찾을 수 없습니다.'
+      };
+    }
+    
+    // 30일 이내 복구 가능 여부 확인
+    const deletedDate = new Date(user.deletedAt);
+    const now = new Date();
+    const daysSinceDeleted = Math.floor((now - deletedDate) / (1000 * 60 * 60 * 24));
+    
+    if (daysSinceDeleted > 30) {
+      return {
+        success: false,
+        message: '탈퇴한 지 30일이 지나 복구할 수 없습니다.'
+      };
+    }
+    
+    // 사용자 계정 복구 (실제로는 별도 백업에서 복원)
+    return {
+      success: false,
+      message: '계정 복구 기능은 관리자 시스템에서만 사용 가능합니다.'
+    };
+    
+  } catch (error) {
+    console.error('❌ 계정 복구 오류:', error);
+    return {
+      success: false,
+      message: '계정 복구 중 오류가 발생했습니다.'
+    };
+  }
 };

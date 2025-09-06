@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.jsx";
 import Container from "../../components/atoms/Container/Container.jsx";
 import Text from "../../components/atoms/Text/Text.jsx";
@@ -12,6 +13,7 @@ import {
 } from "./MyPage.styles.jsx";
 
 const MyPage = () => {
+  const navigate = useNavigate();
   return (
     <PageTemplate>
       <Container>
@@ -31,7 +33,7 @@ const MyPage = () => {
                 <MenuItem>
                   <Text size="md">배송 조회</Text>
                 </MenuItem>
-                <MenuItem>
+                <MenuItem onClick={() => navigate('/auth/edit-profile')} style={{cursor: 'pointer'}}>
                   <Text size="md">회원 정보 수정</Text>
                 </MenuItem>
                 <MenuItem>
