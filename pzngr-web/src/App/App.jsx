@@ -12,7 +12,7 @@ import ProductDetail from "../pages/ProductDetail";
 import CustomerService from "../pages/CustomerService";
 import Cart from "../pages/Cart";
 import MyPage from "../pages/MyPage";
-import { Login, Register } from "../pages/Auth";
+import { Login, Register, ForgotPassword, ResetPassword } from "../pages/Auth";
 
 function App() {
   const {
@@ -62,6 +62,11 @@ function App() {
             <Route path="/customer-service" element={<CustomerService />} />
             <Route path="/cart" element={<Cart />} />
             <Route path="/my-page" element={<MyPage />} />
+            <Route path="/auth/login" element={<Login />} />
+            <Route path="/auth/register" element={<Register />} />
+            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+            <Route path="/auth/reset-password" element={<ResetPassword />} />
+            {/* 기존 호환성을 위한 리다이렉트 */}
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
           </Routes>

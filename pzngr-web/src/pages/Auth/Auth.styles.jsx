@@ -299,3 +299,125 @@ export const SocialLoginSection = styled.div`
     }
   }
 `;
+
+export const FormGroup = styled.div`
+  margin-bottom: 1rem;
+  
+  &:last-child {
+    margin-bottom: 0;
+  }
+`;
+
+export const FormLabel = styled.label`
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: ${({ theme }) => theme.colors.text || '#333'};
+  font-size: 0.875rem;
+`;
+
+export const FormInput = styled.input`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 1rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  
+  &:focus {
+    outline: none;
+    border-color: ${({ theme }) => theme.colors.primary || '#007bff'};
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+  }
+  
+  &:disabled {
+    background-color: #f8f9fa;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+  
+  &::placeholder {
+    color: #999;
+  }
+`;
+
+export const FormButton = styled.button`
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: ${({ theme }) => theme.colors.primary || '#007bff'};
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  
+  &:hover:not(:disabled) {
+    background-color: ${({ theme }) => theme.colors.primaryDark || '#0056b3'};
+  }
+  
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+`;
+
+export const FormMessage = styled.div`
+  margin: 1rem 0;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  
+  ${({ type }) => {
+    if (type === 'success') {
+      return `
+        color: #28a745;
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        
+        &::before {
+          content: '✓';
+          margin-right: 0.5rem;
+          font-weight: bold;
+        }
+      `;
+    } else if (type === 'error') {
+      return `
+        color: #dc3545;
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        
+        &::before {
+          content: '⚠';
+          margin-right: 0.5rem;
+        }
+      `;
+    }
+    return '';
+  }}
+`;
+
+export const LinkContainer = styled.div`
+  margin-top: 1.5rem;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  
+  span {
+    color: #666;
+  }
+`;
+
+export const FormLink = styled.a`
+  color: ${({ theme }) => theme.colors.primary || '#007bff'};
+  text-decoration: none;
+  font-size: 0.875rem;
+  
+  &:hover {
+    text-decoration: underline;
+  }
+`;

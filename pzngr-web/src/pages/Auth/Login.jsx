@@ -221,6 +221,24 @@ const Login = () => {
               <Button
                 type="button"
                 variant="text"
+                onClick={() => navigate('/auth/forgot-password')}
+                disabled={isSubmitting}
+                style={{ 
+                  color: '#666', 
+                  textDecoration: 'underline',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                비밀번호를 잊으셨나요?
+              </Button>
+            </div>
+
+            <div style={{ marginTop: '1rem', textAlign: 'center' }}>
+              <Button
+                type="button"
+                variant="text"
                 onClick={() => navigate('/forgot-password')}
                 disabled={isSubmitting}
               >
