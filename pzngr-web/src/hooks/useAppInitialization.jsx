@@ -5,7 +5,9 @@
 import { useEffect, useState } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { useProductStore } from '../stores/productStore';
+import { useUserStore } from '../stores/userStore';
 import { getInitialDataFromStorage, INITIAL_DATA_KEYS } from '../data/initialData';
+import { initializeSessionCleanupService } from '../utils/sessionCleanupService';
 
 /**
  * 앱 초기화를 관리하는 커스텀 Hook
@@ -23,6 +25,7 @@ export const useAppInitialization = () => {
   } = useAppStore();
   
   const { setProducts } = useProductStore();
+  const { initializeSession } = useUserStore();
 
   // Zustand persist 하이드레이션 완료 확인
   useEffect(() => {
@@ -45,7 +48,15 @@ export const useAppInitialization = () => {
       console.log('🔧 Starting app initialization process...');
       
       try {
-        // 앱 기본 초기화
+        // 1. 사용자 세션 초기화 (게스트 세션 포함)
+        console.log('👤 Initializing user session...');
+        initializeSession();
+        
+        // 2. 세션 정리 서비스 시작
+        console.log('🧹 Starting session cleanup service...');
+        initializeSessionCleanupService();
+        
+        // 3. 앱 기본 초기화
         const initialized = await initializeApp();
         
         if (initialized) {
@@ -68,6 +79,9 @@ export const useAppInitialization = () => {
     if (isAppReady()) {
       console.log('✅ App already initialized');
       
+      // 세션은 항상 확인 (재초기화 필요할 수 있음)
+      initializeSession();
+      
       // ProductStore에 데이터가 없다면 로드
       const productStore = useProductStore.getState();
       if (productStore.products.length === 0) {
@@ -81,7 +95,7 @@ export const useAppInitialization = () => {
     }
     
     runInitialization();
-  }, [hydrated, initializeApp, setProducts, isAppReady]);
+  }, [hydrated, initializeApp, setProducts, isAppReady, initializeSession]);
 
   // 초기화 상태 반환
   const status = getInitializationStatus();

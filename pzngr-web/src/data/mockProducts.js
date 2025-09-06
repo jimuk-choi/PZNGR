@@ -138,7 +138,7 @@ export const mockProducts = [
       description:
         "PZNGR의 시그니처 Doodle Arch 티셔츠. 편안한 면 소재, 다양한 색상 옵션",
       keywords: ["PZNGR", "티셔츠", "Doodle Arch", "면티", "캐주얼"],
-      slug: "001",
+      slug: "Doodle Arch T-Shirt - Scarlet Oat",
     },
 
     shipping: {
@@ -252,7 +252,7 @@ export const mockProducts = [
       description:
         "PZNGR의 Doodle Plane 숄더백. 실용적인 디자인, 편리한 사용감",
       keywords: ["PZNGR", "숄더백", "Doodle Plane", "가방", "액세서리"],
-      slug: "002",
+      slug: "Doodle Arch T-Shirt - Chestnut Tiramisu",
     },
 
     shipping: {
@@ -366,7 +366,7 @@ export const mockProducts = [
       description:
         "PZNGR의 Doodle Plane 숄더백. 실용적인 디자인, 편리한 사용감",
       keywords: ["PZNGR", "숄더백", "Doodle Plane", "가방", "액세서리"],
-      slug: "003",
+      slug: "Doodle Arch T-Shirt - Harris The Sky",
     },
 
     shipping: {
@@ -480,7 +480,7 @@ export const mockProducts = [
       description:
         "PZNGR의 Doodle Plane 숄더백. 실용적인 디자인, 편리한 사용감",
       keywords: ["PZNGR", "숄더백", "Doodle Plane", "가방", "액세서리"],
-      slug: "004",
+      slug: "Doodle Arch T-Shirt - Old Forest",
     },
 
     shipping: {
@@ -501,6 +501,330 @@ export const mockProducts = [
       newProduct: true,
       bestSeller: false,
       sortOrder: 3,
+      startDate: new Date("2024-03-01"),
+      endDate: null,
+    },
+
+    stats: {
+      viewCount: 892,
+      purchaseCount: 45,
+      wishlistCount: 89,
+      rating: 4.4,
+      reviewCount: 18,
+    },
+
+    status: PRODUCT_STATUS.ACTIVE,
+    createdAt: new Date("2024-03-01"),
+    updatedAt: new Date("2024-03-15"),
+    createdBy: "admin_001",
+    updatedBy: "admin_001",
+  },
+  {
+    id: "prod_005",
+    name: "Doodle Plane SB - Halloween Orange",
+    description: "설명",
+    shortDescription: "활동적인 일상을 위한 편리한 숄더백",
+    brand: "PZNGR",
+    model: "DPSB-2024",
+    sku: "PZNGR-DPSB-001",
+    barcode: "8801234567891",
+
+    price: {
+      regular: 39000,
+      sale: 39000,
+      discount: 0,
+      discountRate: 0,
+      currency: "KRW",
+      type: PRICE_TYPE.FIXED,
+    },
+
+    images: {
+      main: DPSBHO,
+      gallery: [DPSBHO, DPSBLN, DPSBCC],
+      thumbnail: DPSBHO,
+      hover: DPSBLN,
+    },
+
+    category: {
+      main: "fashion",
+      sub: "bags",
+      detail: "",
+      tags: ["숄더백", "가방", "PZNGR", "액세서리", "실용적"],
+    },
+
+    specifications: {
+      dimensions: {
+        width: 0,
+        height: 0,
+        depth: 0,
+        unit: "cm",
+      },
+      weight: {
+        value: 180,
+        unit: "g",
+      },
+      material: "캔버스 소재",
+      color: "다양한 색상",
+      origin: "한국",
+      manufacturer: "PZNGR",
+    },
+
+    options: [createBagColorOption()],
+
+    inventory: {
+      total: 45,
+      available: 40,
+      reserved: 5,
+      damaged: 0,
+      safetyStock: 8,
+      reorderPoint: 15,
+      maxStock: 80,
+      trackStock: true,
+      allowBackorder: false,
+    },
+
+    seo: {
+      title: "Doodle Plane SB 숄더백 - PZNGR 액세서리 컬렉션",
+      description:
+        "PZNGR의 Doodle Plane 숄더백. 실용적인 디자인, 편리한 사용감",
+      keywords: ["PZNGR", "숄더백", "Doodle Plane", "가방", "액세서리"],
+      slug: "Doodle Plane SB - Halloween Orange",
+    },
+
+    shipping: {
+      freeShipping: false,
+      weight: 180,
+      dimensions: {
+        width: 28,
+        height: 2,
+        depth: 20,
+        unit: "cm",
+      },
+      fee: 3000,
+      restrictions: [],
+    },
+
+    display: {
+      featured: true,
+      newProduct: true,
+      bestSeller: false,
+      sortOrder: 2,
+      startDate: new Date("2024-03-01"),
+      endDate: null,
+    },
+
+    stats: {
+      viewCount: 892,
+      purchaseCount: 45,
+      wishlistCount: 89,
+      rating: 4.4,
+      reviewCount: 18,
+    },
+
+    status: PRODUCT_STATUS.ACTIVE,
+    createdAt: new Date("2024-03-01"),
+    updatedAt: new Date("2024-03-15"),
+    createdBy: "admin_001",
+    updatedBy: "admin_001",
+  },
+  {
+    id: "prod_006",
+    name: "Doodle Plane SB - Lemon Navy",
+    description: "설명",
+    shortDescription: "활동적인 일상을 위한 편리한 숄더백",
+    brand: "PZNGR",
+    model: "DPSB-2024",
+    sku: "PZNGR-DPSB-001",
+    barcode: "8801234567891",
+
+    price: {
+      regular: 39000,
+      sale: 39000,
+      discount: 0,
+      discountRate: 0,
+      currency: "KRW",
+      type: PRICE_TYPE.FIXED,
+    },
+
+    images: {
+      main: DPSBLN,
+      gallery: [DPSBHO, DPSBLN, DPSBCC],
+      thumbnail: DPSBLN,
+      hover: DPSBLN,
+    },
+
+    category: {
+      main: "fashion",
+      sub: "bags",
+      detail: "",
+      tags: ["숄더백", "가방", "PZNGR", "액세서리", "실용적"],
+    },
+
+    specifications: {
+      dimensions: {
+        width: 0,
+        height: 0,
+        depth: 0,
+        unit: "cm",
+      },
+      weight: {
+        value: 180,
+        unit: "g",
+      },
+      material: "캔버스 소재",
+      color: "다양한 색상",
+      origin: "한국",
+      manufacturer: "PZNGR",
+    },
+
+    options: [createBagColorOption()],
+
+    inventory: {
+      total: 45,
+      available: 40,
+      reserved: 5,
+      damaged: 0,
+      safetyStock: 8,
+      reorderPoint: 15,
+      maxStock: 80,
+      trackStock: true,
+      allowBackorder: false,
+    },
+
+    seo: {
+      title: "Doodle Plane SB 숄더백 - PZNGR 액세서리 컬렉션",
+      description:
+        "PZNGR의 Doodle Plane 숄더백. 실용적인 디자인, 편리한 사용감",
+      keywords: ["PZNGR", "숄더백", "Doodle Plane", "가방", "액세서리"],
+      slug: "Doodle Plane SB - Lemon Navy",
+    },
+
+    shipping: {
+      freeShipping: false,
+      weight: 180,
+      dimensions: {
+        width: 28,
+        height: 2,
+        depth: 20,
+        unit: "cm",
+      },
+      fee: 3000,
+      restrictions: [],
+    },
+
+    display: {
+      featured: true,
+      newProduct: true,
+      bestSeller: false,
+      sortOrder: 2,
+      startDate: new Date("2024-03-01"),
+      endDate: null,
+    },
+
+    stats: {
+      viewCount: 892,
+      purchaseCount: 45,
+      wishlistCount: 89,
+      rating: 4.4,
+      reviewCount: 18,
+    },
+
+    status: PRODUCT_STATUS.ACTIVE,
+    createdAt: new Date("2024-03-01"),
+    updatedAt: new Date("2024-03-15"),
+    createdBy: "admin_001",
+    updatedBy: "admin_001",
+  },
+  {
+    id: "prod_007",
+    name: "Doodle Plane SB - Cacao Cream",
+    description: "설명",
+    shortDescription: "활동적인 일상을 위한 편리한 숄더백",
+    brand: "PZNGR",
+    model: "DPSB-2024",
+    sku: "PZNGR-DPSB-001",
+    barcode: "8801234567891",
+
+    price: {
+      regular: 39000,
+      sale: 39000,
+      discount: 0,
+      discountRate: 0,
+      currency: "KRW",
+      type: PRICE_TYPE.FIXED,
+    },
+
+    images: {
+      main: DPSBCC,
+      gallery: [DPSBHO, DPSBLN, DPSBCC],
+      thumbnail: DPSBCC,
+      hover: DPSBCC,
+    },
+
+    category: {
+      main: "fashion",
+      sub: "bags",
+      detail: "",
+      tags: ["숄더백", "가방", "PZNGR", "액세서리", "실용적"],
+    },
+
+    specifications: {
+      dimensions: {
+        width: 0,
+        height: 0,
+        depth: 0,
+        unit: "cm",
+      },
+      weight: {
+        value: 180,
+        unit: "g",
+      },
+      material: "캔버스 소재",
+      color: "다양한 색상",
+      origin: "한국",
+      manufacturer: "PZNGR",
+    },
+
+    options: [createBagColorOption()],
+
+    inventory: {
+      total: 45,
+      available: 40,
+      reserved: 5,
+      damaged: 0,
+      safetyStock: 8,
+      reorderPoint: 15,
+      maxStock: 80,
+      trackStock: true,
+      allowBackorder: false,
+    },
+
+    seo: {
+      title: "Doodle Plane SB 숄더백 - PZNGR 액세서리 컬렉션",
+      description:
+        "PZNGR의 Doodle Plane 숄더백. 실용적인 디자인, 편리한 사용감",
+      keywords: ["PZNGR", "숄더백", "Doodle Plane", "가방", "액세서리"],
+      slug: "Doodle Plane SB - Cacao Cream",
+    },
+
+    shipping: {
+      freeShipping: false,
+      weight: 180,
+      dimensions: {
+        width: 28,
+        height: 2,
+        depth: 20,
+        unit: "cm",
+      },
+      fee: 3000,
+      restrictions: [],
+    },
+
+    display: {
+      featured: true,
+      newProduct: true,
+      bestSeller: false,
+      sortOrder: 2,
       startDate: new Date("2024-03-01"),
       endDate: null,
     },

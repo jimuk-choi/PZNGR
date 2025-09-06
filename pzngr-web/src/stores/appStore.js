@@ -60,7 +60,7 @@ export const useAppStore = create(
         
         if (state.isInitializing) {
           console.log('⏳ App initialization already in progress...');
-          return;
+          return state.isAppReady();
         }
 
         set({ 
@@ -68,81 +68,137 @@ export const useAppStore = create(
           initializationError: null 
         });
 
-        try {
-          console.log('🚀 Starting app initialization...');
-          
-          // 1. 데이터 지속성 테스트 먼저 실행
-          console.log('🔍 Testing data persistence...');
-          const persistenceTest = testDataPersistence();
-          set({ 
-            persistenceStatus: persistenceTest,
-            persistenceTestCompleted: true 
-          });
+        const startTime = performance.now();
+        let retryCount = 0;
+        const maxRetries = 3;
 
-          // 지속성 문제가 있는 경우 경고
-          if (persistenceTest.status !== DATA_PERSISTENCE_STATUS.SUCCESS) {
-            console.warn('⚠️ Data persistence issues detected:', persistenceTest);
+        const attemptInitialization = async () => {
+          try {
+            console.log(`🚀 Starting app initialization... (attempt ${retryCount + 1}/${maxRetries + 1})`);
+            
+            // 1. 데이터 지속성 테스트 먼저 실행
+            console.log('🔍 Testing data persistence...');
+            const persistenceTest = testDataPersistence();
+            set({ 
+              persistenceStatus: persistenceTest,
+              persistenceTestCompleted: true 
+            });
+
+            // 지속성 문제가 있는 경우 경고
+            if (persistenceTest.status !== DATA_PERSISTENCE_STATUS.SUCCESS) {
+              console.warn('⚠️ Data persistence issues detected:', persistenceTest);
+              
+              // 심각한 저장소 문제인 경우 초기화 중단
+              if (persistenceTest.status === DATA_PERSISTENCE_STATUS.STORAGE_UNAVAILABLE) {
+                throw new Error('저장소를 사용할 수 없습니다. 브라우저 설정을 확인해주세요.');
+              }
+              
+              get().addNotification({
+                type: 'warning',
+                message: '데이터 저장에 일부 문제가 있습니다. 일부 기능이 제한될 수 있습니다.',
+                autoHide: false
+              });
+            }
+            
+            // 2. 초기 데이터 로딩 (타임아웃 설정)
+            const dataLoadingPromise = new Promise((resolve, reject) => {
+              const timeout = setTimeout(() => {
+                reject(new Error('데이터 로딩 시간 초과 (10초)'));
+              }, 10000);
+              
+              try {
+                const settings = initializeAllData();
+                clearTimeout(timeout);
+                resolve(settings);
+              } catch (error) {
+                clearTimeout(timeout);
+                reject(error);
+              }
+            });
+            
+            const settings = await dataLoadingPromise;
+            
+            // 3. 데이터 로딩 상태 확인 및 검증
+            const dataStatus = {
+              products: !!getInitialDataFromStorage(INITIAL_DATA_KEYS.PRODUCTS),
+              users: !!getInitialDataFromStorage(INITIAL_DATA_KEYS.USERS),
+              categories: !!getInitialDataFromStorage(INITIAL_DATA_KEYS.CATEGORIES),
+            };
+            
+            dataStatus.overall = Object.values(dataStatus).every(Boolean);
+            
+            // 4. 필수 데이터가 로드되지 않은 경우 경고
+            if (!dataStatus.overall) {
+              const missingData = Object.entries(dataStatus)
+                .filter(([key, value]) => key !== 'overall' && !value)
+                .map(([key]) => key);
+              
+              console.warn('⚠️ Missing essential data:', missingData);
+              
+              if (missingData.length === Object.keys(dataStatus).length - 1) {
+                throw new Error('필수 데이터를 로드할 수 없습니다.');
+              }
+            }
+            
+            const endTime = performance.now();
+            const initializationTime = Math.round(endTime - startTime);
+            
+            set({
+              settings: settings,
+              dataLoadingStatus: dataStatus,
+              isFirstRun: settings.isFirstRun,
+              showWelcome: settings.isFirstRun && settings.notifications.showWelcome,
+              lastInitialized: new Date().toISOString(),
+              isInitializing: false
+            });
+
+            // 첫 실행 후 상태 업데이트
+            if (settings.isFirstRun) {
+              get().markFirstRunComplete();
+            }
+
+            console.log(`✅ App initialization completed successfully in ${initializationTime}ms`);
+            
+            // 환영 알림 추가
+            if (settings.notifications.showDataLoaded) {
+              get().addNotification({
+                type: 'success',
+                message: `앱 데이터가 성공적으로 로드되었습니다! (${initializationTime}ms)`,
+                autoHide: true
+              });
+            }
+
+            return true;
+
+          } catch (error) {
+            console.error(`❌ App initialization failed (attempt ${retryCount + 1}):`, error);
+            
+            // 재시도 로직
+            if (retryCount < maxRetries && !error.message.includes('저장소를 사용할 수 없습니다')) {
+              retryCount++;
+              console.log(`🔄 Retrying initialization in 1 second... (${retryCount}/${maxRetries})`);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+              return attemptInitialization();
+            }
+            
+            // 최종 실패
+            const errorMessage = error.message || '알 수 없는 오류가 발생했습니다.';
+            set({
+              initializationError: errorMessage,
+              isInitializing: false
+            });
+            
             get().addNotification({
-              type: 'warning',
-              message: '데이터 저장에 일부 문제가 있습니다. 일부 기능이 제한될 수 있습니다.',
+              type: 'error',
+              message: `앱 초기화 실패: ${errorMessage}`,
               autoHide: false
             });
+
+            return false;
           }
-          
-          // 2. 초기 데이터 로딩
-          const settings = initializeAllData();
-          
-          // 데이터 로딩 상태 확인
-          const dataStatus = {
-            products: !!getInitialDataFromStorage(INITIAL_DATA_KEYS.PRODUCTS),
-            users: !!getInitialDataFromStorage(INITIAL_DATA_KEYS.USERS),
-            categories: !!getInitialDataFromStorage(INITIAL_DATA_KEYS.CATEGORIES),
-          };
-          
-          dataStatus.overall = Object.values(dataStatus).every(Boolean);
-          
-          set({
-            settings: settings,
-            dataLoadingStatus: dataStatus,
-            isFirstRun: settings.isFirstRun,
-            showWelcome: settings.isFirstRun && settings.notifications.showWelcome,
-            lastInitialized: new Date().toISOString(),
-            isInitializing: false
-          });
+        };
 
-          // 첫 실행 후 상태 업데이트
-          if (settings.isFirstRun) {
-            get().markFirstRunComplete();
-          }
-
-          console.log('✅ App initialization completed successfully');
-          
-          // 환영 알림 추가
-          if (settings.notifications.showDataLoaded) {
-            get().addNotification({
-              type: 'success',
-              message: '앱 데이터가 성공적으로 로드되었습니다!',
-              autoHide: true
-            });
-          }
-
-          return true;
-
-        } catch (error) {
-          console.error('❌ App initialization failed:', error);
-          set({
-            initializationError: error.message,
-            isInitializing: false
-          });
-          
-          get().addNotification({
-            type: 'error',
-            message: '앱 초기화 중 오류가 발생했습니다.',
-            autoHide: false
-          });
-
-          return false;
-        }
+        return attemptInitialization();
       },
 
       // 첫 실행 완료 표시

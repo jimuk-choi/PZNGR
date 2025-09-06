@@ -161,8 +161,8 @@ const AppLoadingScreen = ({ status }) => {
         
         <StatusList>
           {statusItems.map((item) => (
-            <StatusItem key={item.key} completed={item.completed}>
-              <StatusIcon completed={item.completed}>
+            <StatusItem key={item.key} completed={item.completed?.toString()}>
+              <StatusIcon completed={item.completed?.toString()}>
                 {item.completed ? '✓' : '○'}
               </StatusIcon>
               {item.label}

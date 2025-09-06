@@ -2,6 +2,7 @@
 export { useUserStore } from './userStore';
 export { useProductStore } from './productStore';
 export { useCartStore } from './cartStore';
+export { useWishlistStore } from './wishlistStore';
 export { useOrderStore, ORDER_STATUS } from './orderStore';
 export { useAppStore } from './appStore';
 
