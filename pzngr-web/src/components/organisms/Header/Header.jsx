@@ -56,7 +56,7 @@ const Header = () => {
       <StyledHeader>
         <HeaderWrapper>
           <MenuGroup>
-            <MenuItem to="/shop">SHOP</MenuItem>
+            <MenuItem to="/shop">SHOP1</MenuItem>
             <MenuItem to="/customer-service">고객센터</MenuItem>
           </MenuGroup>
 
@@ -68,7 +68,7 @@ const Header = () => {
             {isAuthenticated() ? (
               <UserSection>
                 <UserInfo>
-                  <div className="user-name">{user?.name || 'Unknown'}</div>
+                  <div className="user-name">{user?.name || "Unknown"}</div>
                   <div className="user-status">로그인됨</div>
                 </UserInfo>
                 <Icon
@@ -78,10 +78,7 @@ const Header = () => {
                   onClick={handleUserClick}
                 />
                 <AuthButtons>
-                  <button 
-                    className="logout-btn" 
-                    onClick={handleLogout}
-                  >
+                  <button className="logout-btn" onClick={handleLogout}>
                     로그아웃
                   </button>
                 </AuthButtons>
@@ -89,14 +86,14 @@ const Header = () => {
             ) : (
               <UserSection>
                 <AuthButtons>
-                  <button 
-                    className="login-btn" 
+                  <button
+                    className="login-btn"
                     onClick={() => navigate("/login")}
                   >
                     로그인
                   </button>
-                  <button 
-                    className="register-btn" 
+                  <button
+                    className="register-btn"
                     onClick={() => navigate("/register")}
                   >
                     회원가입
@@ -110,7 +107,7 @@ const Header = () => {
                 />
               </UserSection>
             )}
-            
+
             <CartIconWrapper onClick={handleCartClick}>
               <Icon
                 name="shopping_basket"
