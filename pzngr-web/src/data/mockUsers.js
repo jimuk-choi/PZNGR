@@ -62,7 +62,7 @@ export const mockUsers = [
     // 일반 사용자 1
     id: 'user_1',
     email: 'kimcs@example.com',
-    password: 'hashedPassword123!', // 실제로는 해시된 값
+    password: 'test123!', // 테스트용 비밀번호 (로그인 시 자동으로 해시로 업그레이드됨)
     name: '김철수',
     phone: '010-1234-5678',
     birthDate: '1990-05-15',
@@ -96,7 +96,7 @@ export const mockUsers = [
     // 일반 사용자 2
     id: 'user_2',
     email: 'parkyh@example.com',
-    password: 'hashedPassword456!',
+    password: 'test123!',
     name: '박영희',
     phone: '010-9876-5432',
     birthDate: '1988-12-03',
@@ -125,7 +125,7 @@ export const mockUsers = [
     // 관리자 사용자
     id: 'admin_1',
     email: 'admin@pzngr.com',
-    password: 'hashedAdminPassword789!',
+    password: 'admin123!',
     name: '관리자',
     phone: '010-0000-0000',
     birthDate: '1985-03-20',
@@ -169,7 +169,7 @@ export const mockUsers = [
     // 신규 사용자 (브론즈)
     id: 'user_3',
     email: 'newuser@example.com',
-    password: 'hashedNewPassword!',
+    password: 'test123!',
     name: '이신규',
     phone: '010-5555-6666',
     birthDate: '1995-08-22',
@@ -213,7 +213,7 @@ export const mockUsers = [
     // 정지된 사용자
     id: 'user_4',
     email: 'suspended@example.com',
-    password: 'hashedSuspendedPassword!',
+    password: 'suspended123!',
     name: '정지자',
     phone: '010-7777-8888',
     birthDate: '1992-11-10',

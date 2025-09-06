@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { StyledLoginPage, FormContainer, FormSection, FormRow, ErrorMessage, SuccessMessage } from './Auth.styles';
 import { useUserStore } from '../../stores/userStore';
 import { validateLoginForm } from '../../utils/validation';
+import { loginUser, getTestEmails } from '../../services/authService';
 import MainLayout from '../../components/layouts/MainLayout';
 import Button from '../../components/atoms/Button';
 import Text from '../../components/atoms/Text';
@@ -19,6 +20,8 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [testUsers, setTestUsers] = useState([]);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleInputChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -34,6 +37,28 @@ const Login = () => {
       delete updatedErrors[name];
       setErrors(updatedErrors);
     }
+  };
+
+  // 컴포넌트 마운트 시 테스트 사용자 로드
+  useEffect(() => {
+    try {
+      const emails = getTestEmails();
+      setTestUsers(emails.filter(user => user.status === 'active')); // 활성 사용자만
+    } catch (error) {
+      console.error('테스트 사용자 로드 오류:', error);
+      setTestUsers([]);
+    }
+  }, []);
+
+  // 테스트 계정으로 자동 완성
+  const fillTestAccount = (email) => {
+    const password = email.includes('admin') ? 'admin123!' : 'test123!';
+    setFormData(prev => ({
+      ...prev,
+      email: email,
+      password: password
+    }));
+    setErrors({});
   };
 
   const handleSubmit = async (e) => {
@@ -52,32 +77,25 @@ const Login = () => {
     }
 
     try {
-      // 실제 로그인 로직은 나중에 구현 예정 (현재는 모의 구현)
-      console.log('로그인 시도:', {
-        email: formData.email,
-        rememberMe: formData.rememberMe
-      });
-
-      // 임시 사용자 데이터 (실제로는 서버에서 받아올 데이터)
-      const mockUserData = {
-        id: `user_${Date.now()}`,
-        name: '테스트 사용자',
-        email: formData.email,
-        isAdmin: false
-      };
-
-      // 로그인 처리 (게스트 데이터 마이그레이션 포함)
-      const loginResult = await login(mockUserData, true);
+      // 실제 로그인 처리
+      const authResult = await loginUser(formData.email, formData.password);
       
-      if (loginResult.success) {
-        setSubmitMessage('로그인이 완료되었습니다!');
+      if (authResult.success) {
+        // userStore를 통한 로그인 처리 (게스트 데이터 마이그레이션 포함)
+        const loginResult = await login(authResult.user, true);
         
-        // 1초 후 메인 페이지로 이동
-        setTimeout(() => {
-          navigate('/');
-        }, 1000);
+        if (loginResult.success) {
+          setSubmitMessage('로그인이 완료되었습니다!');
+          
+          // 1초 후 메인 페이지로 이동
+          setTimeout(() => {
+            navigate('/');
+          }, 1000);
+        } else {
+          setSubmitMessage('로그인 처리 중 오류가 발생했습니다.');
+        }
       } else {
-        setSubmitMessage('로그인에 실패했습니다. 다시 시도해 주세요.');
+        setSubmitMessage(authResult.message);
       }
 
     } catch (error) {
@@ -114,15 +132,36 @@ const Login = () => {
 
               <FormRow>
                 <label htmlFor="password">비밀번호</label>
-                <input
-                  type="password"
-                  id="password"
-                  name="password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  placeholder="비밀번호를 입력해주세요"
-                  disabled={isSubmitting}
-                />
+                <div style={{ position: 'relative' }}>
+                  <input
+                    type={showPassword ? "text" : "password"}
+                    id="password"
+                    name="password"
+                    value={formData.password}
+                    onChange={handleInputChange}
+                    placeholder="비밀번호를 입력해주세요"
+                    disabled={isSubmitting}
+                    style={{ paddingRight: '40px' }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    disabled={isSubmitting}
+                    style={{
+                      position: 'absolute',
+                      right: '12px',
+                      top: '50%',
+                      transform: 'translateY(-50%)',
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      fontSize: '14px',
+                      color: '#666'
+                    }}
+                  >
+                    {showPassword ? '🙈' : '👁️'}
+                  </button>
+                </div>
                 {errors.password && <ErrorMessage>{errors.password}</ErrorMessage>}
               </FormRow>
 
@@ -176,6 +215,60 @@ const Login = () => {
                 비밀번호를 잊으셨나요?
               </Button>
             </div>
+
+            {/* 개발용: 테스트 계정 목록 */}
+            {testUsers.length > 0 && (
+              <div style={{ 
+                marginTop: '2rem', 
+                padding: '1rem', 
+                backgroundColor: '#f8f9fa', 
+                borderRadius: '8px',
+                fontSize: '0.875rem'
+              }}>
+                <Text variant="small" style={{ fontWeight: 'bold', marginBottom: '0.75rem' }}>
+                  개발용 - 테스트 계정 (클릭해서 자동완성):
+                </Text>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                  {testUsers.map((testUser, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => fillTestAccount(testUser.email)}
+                      disabled={isSubmitting}
+                      style={{ 
+                        padding: '8px 12px',
+                        backgroundColor: '#fff',
+                        border: '1px solid #dee2e6',
+                        borderRadius: '4px',
+                        fontSize: '0.75rem',
+                        cursor: 'pointer',
+                        textAlign: 'left',
+                        transition: 'all 0.2s ease',
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center'
+                      }}
+                      onMouseEnter={(e) => {
+                        e.target.style.backgroundColor = '#e9ecef';
+                      }}
+                      onMouseLeave={(e) => {
+                        e.target.style.backgroundColor = '#fff';
+                      }}
+                    >
+                      <span>
+                        <strong>{testUser.name}</strong> - {testUser.email}
+                      </span>
+                      <span style={{ color: '#6c757d', fontSize: '0.7rem' }}>
+                        클릭하여 로그인
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <Text variant="small" style={{ marginTop: '0.75rem', color: '#666' }}>
+                  💡 일반 사용자: <code>test123!</code> | 관리자: <code>admin123!</code>
+                </Text>
+              </div>
+            )}
           </form>
         </FormContainer>
       </StyledLoginPage>
