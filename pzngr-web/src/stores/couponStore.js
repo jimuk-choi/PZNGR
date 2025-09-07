@@ -250,7 +250,7 @@ export const useCouponStore = create(
           return { success: false, message: validation.reason };
         }
         
-        const discountInfo = calculateDiscount(validation.coupon, orderAmount, orderItems);
+        const discountInfo = calculateDiscount(validation.coupon, orderAmount);
         
         return {
           success: true,

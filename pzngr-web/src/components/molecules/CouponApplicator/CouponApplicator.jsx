@@ -21,9 +21,7 @@ const CouponApplicator = ({
   const { 
     validateCouponUsage, 
     applyCoupon, 
-    getPublicCoupons,
-    getCouponsByCategory,
-    getCouponsByProduct 
+    getPublicCoupons
   } = useCouponStore();
   
   const { user } = useUserStore();
@@ -40,10 +38,6 @@ const CouponApplicator = ({
     setMessage('');
     
     try {
-      // Get order categories and products from orderItems
-      const orderCategories = orderItems.map(item => item.category).filter(Boolean);
-      const orderProducts = orderItems.map(item => item.productId || item.id).filter(Boolean);
-      
       const result = applyCoupon(
         couponCode.trim(),
         orderAmount,

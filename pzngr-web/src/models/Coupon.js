@@ -239,6 +239,9 @@ export const validateCoupon = (coupon, orderAmount = 0, orderCategories = [], or
       case CONDITION_TYPE.FIRST_ORDER:
         // TODO: 사용자의 첫 주문인지 확인하는 로직 추가
         break;
+        
+      default:
+        break;
     }
   }
   
@@ -249,10 +252,9 @@ export const validateCoupon = (coupon, orderAmount = 0, orderCategories = [], or
  * 할인 금액 계산
  * @param {Coupon} coupon - 쿠폰 정보
  * @param {number} orderAmount - 주문 금액
- * @param {Object[]} orderItems - 주문 상품들
  * @returns {Object} 할인 정보 { discountAmount: number, finalAmount: number }
  */
-export const calculateDiscount = (coupon, orderAmount, orderItems = []) => {
+export const calculateDiscount = (coupon, orderAmount) => {
   let discountAmount = 0;
   
   switch (coupon.type) {

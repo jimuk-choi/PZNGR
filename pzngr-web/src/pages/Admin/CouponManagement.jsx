@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Container from '../../components/atoms/Container';
 import Text from '../../components/atoms/Text';
 import Button from '../../components/atoms/Button';
 import { useCouponStore } from '../../stores/couponStore';
 import { useCategoryStore } from '../../stores/categoryStore';
-import { useProductStore } from '../../stores/productStore';
 import { 
   COUPON_TYPE, 
   COUPON_STATUS, 
@@ -17,10 +15,7 @@ import {
 import * as S from './CouponManagement.styles';
 
 const CouponManagement = () => {
-  const navigate = useNavigate();
-  
   const {
-    coupons,
     addCoupon,
     updateCoupon,
     removeCoupon,
@@ -33,7 +28,6 @@ const CouponManagement = () => {
   } = useCouponStore();
   
   const { getActiveCategories } = useCategoryStore();
-  const { products } = useProductStore();
   
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingCoupon, setEditingCoupon] = useState(null);
