@@ -1,5 +1,10 @@
-// Mock image upload service (will be replaced with AWS S3 integration)
-export const imageUploadService = {
+import { firebaseImageService } from './firebaseImageService';
+
+// 환경에 따라 Mock 또는 Firebase 서비스 선택
+const USE_FIREBASE = process.env.REACT_APP_USE_FIREBASE === 'true';
+
+// Mock 서비스 (개발/테스트용)
+const mockImageService = {
   async uploadSingle(file) {
     console.log('📁 Mock 단일 이미지 업로드:', file.name);
     
@@ -139,3 +144,6 @@ export const imageUploadService = {
     return mockResult;
   }
 };
+
+// 실제 사용할 서비스 선택
+export const imageUploadService = USE_FIREBASE ? firebaseImageService : mockImageService;
