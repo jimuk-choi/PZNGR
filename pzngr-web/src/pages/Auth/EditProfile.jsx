@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { MainLayout } from '../../components/layouts';
 import { Text } from '../../components/atoms';
 import { useUserStore } from '../../stores/userStore';
-import { updateUserProfile, changePassword } from '../../services/authService';
+import { updateUserProfile, changePassword, handleGoogleLogin, disconnectGoogleAccount } from '../../services/authService';
+import GoogleLoginButton from '../../components/atoms/GoogleLoginButton';
 import { 
   StyledLoginPage, 
   FormContainer, 
@@ -35,7 +36,7 @@ const EditProfile = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
   const [messageType, setMessageType] = useState('');
-  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'password'
+  const [activeTab, setActiveTab] = useState('profile'); // 'profile' | 'password' | 'social'
   const [errors, setErrors] = useState({});
   
   // 로그인 여부 확인
@@ -210,6 +211,83 @@ const EditProfile = () => {
     }
   };
 
+  // Google 계정 연결
+  const handleGoogleConnect = async (credentialResponse) => {
+    try {
+      setIsSubmitting(true);
+      setSubmitMessage('');
+      setMessageType('');
+      
+      console.log('Google 계정 연결 중...', credentialResponse);
+      
+      const result = await handleGoogleLogin(credentialResponse);
+      
+      if (result.success) {
+        // 기존 계정에 Google 정보 추가
+        updateUserInfo({
+          socialLogins: {
+            ...user.socialLogins,
+            google: result.user.socialLogins?.google
+          },
+          profileImage: result.user.profileImage || user.profileImage
+        });
+        
+        setSubmitMessage('Google 계정이 성공적으로 연결되었습니다.');
+        setMessageType('success');
+      } else {
+        setSubmitMessage(result.message || 'Google 계정 연결에 실패했습니다.');
+        setMessageType('error');
+      }
+    } catch (error) {
+      console.error('Google 계정 연결 오류:', error);
+      setSubmitMessage('Google 계정 연결 중 오류가 발생했습니다.');
+      setMessageType('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Google 계정 연결 해제
+  const handleGoogleDisconnect = async () => {
+    try {
+      setIsSubmitting(true);
+      setSubmitMessage('');
+      setMessageType('');
+      
+      // 마지막 로그인 방법인지 확인
+      if (user.loginProvider === 'google' && !user.password) {
+        setSubmitMessage('Google 계정이 유일한 로그인 방식입니다. 먼저 비밀번호를 설정해주세요.');
+        setMessageType('error');
+        setActiveTab('password');
+        return;
+      }
+      
+      const result = await disconnectGoogleAccount(user.id);
+      
+      if (result.success) {
+        // 사용자 정보에서 Google 연결 정보 제거
+        const updatedSocialLogins = { ...user.socialLogins };
+        delete updatedSocialLogins.google;
+        
+        updateUserInfo({
+          socialLogins: Object.keys(updatedSocialLogins).length > 0 ? updatedSocialLogins : undefined
+        });
+        
+        setSubmitMessage('Google 계정 연결이 해제되었습니다.');
+        setMessageType('success');
+      } else {
+        setSubmitMessage(result.message || 'Google 계정 연결 해제에 실패했습니다.');
+        setMessageType('error');
+      }
+    } catch (error) {
+      console.error('Google 계정 연결 해제 오류:', error);
+      setSubmitMessage('Google 계정 연결 해제 중 오류가 발생했습니다.');
+      setMessageType('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   if (!isLoggedIn || !user) {
     return null; // 로그인 리다이렉트 처리 중
   }
@@ -260,9 +338,25 @@ const EditProfile = () => {
             >
               비밀번호 변경
             </button>
+            <button
+              type="button"
+              onClick={() => setActiveTab('social')}
+              style={{
+                flex: 1,
+                padding: '1rem',
+                border: 'none',
+                backgroundColor: activeTab === 'social' ? '#f8f9fa' : 'transparent',
+                borderBottom: activeTab === 'social' ? '2px solid #007bff' : '2px solid transparent',
+                cursor: 'pointer',
+                fontSize: '1rem',
+                fontWeight: activeTab === 'social' ? 'bold' : 'normal'
+              }}
+            >
+              소셜 계정 연결
+            </button>
           </div>
           
-          {activeTab === 'profile' ? (
+          {activeTab === 'profile' && (
             <form onSubmit={handleProfileSubmit}>
               <FormSection>
                 <FormRow>
@@ -345,7 +439,9 @@ const EditProfile = () => {
                 {isSubmitting ? '수정 중...' : '정보 수정'}
               </FormButton>
             </form>
-          ) : (
+          )}
+
+          {activeTab === 'password' && (
             <form onSubmit={handlePasswordSubmit}>
               <FormSection>
                 <FormRow>
@@ -414,6 +510,178 @@ const EditProfile = () => {
                 {isSubmitting ? '변경 중...' : '비밀번호 변경'}
               </FormButton>
             </form>
+          )}
+
+          {activeTab === 'social' && (
+            <div>
+              <FormSection>
+                <div style={{ marginBottom: '1.5rem' }}>
+                  <Text variant="h3" style={{ marginBottom: '1rem', color: '#333' }}>
+                    연결된 소셜 계정
+                  </Text>
+                  <Text variant="small" style={{ color: '#666', lineHeight: '1.5' }}>
+                    소셜 계정을 연결하면 해당 계정으로도 로그인할 수 있습니다.
+                  </Text>
+                </div>
+
+                {/* Google 계정 연결 상태 */}
+                <div style={{
+                  padding: '1rem',
+                  border: '1px solid #e1e5e9',
+                  borderRadius: '8px',
+                  marginBottom: '1rem',
+                  backgroundColor: '#f8f9fa'
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    marginBottom: '0.5rem'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        backgroundColor: '#4285f4',
+                        marginRight: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: 'white',
+                        fontSize: '12px',
+                        fontWeight: 'bold'
+                      }}>
+                        G
+                      </div>
+                      <div>
+                        <Text variant="body" style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                          Google 계정
+                        </Text>
+                        <Text variant="small" style={{ color: '#666' }}>
+                          {user?.socialLogins?.google ? 
+                            `연결됨: ${user.socialLogins.google.email}` : 
+                            '연결되지 않음'
+                          }
+                        </Text>
+                      </div>
+                    </div>
+                    
+                    {user?.socialLogins?.google ? (
+                      <button
+                        type="button"
+                        onClick={handleGoogleDisconnect}
+                        disabled={isSubmitting}
+                        style={{
+                          padding: '0.5rem 1rem',
+                          border: '1px solid #dc3545',
+                          backgroundColor: 'transparent',
+                          color: '#dc3545',
+                          borderRadius: '4px',
+                          cursor: isSubmitting ? 'not-allowed' : 'pointer',
+                          fontSize: '0.875rem',
+                          opacity: isSubmitting ? 0.7 : 1
+                        }}
+                      >
+                        {isSubmitting ? '처리 중...' : '연결 해제'}
+                      </button>
+                    ) : (
+                      <div style={{ minWidth: '100px' }}>
+                        <GoogleLoginButton 
+                          onSuccess={handleGoogleConnect}
+                          onError={(error) => {
+                            console.error('Google 연결 오류:', error);
+                            setSubmitMessage('Google 계정 연결에 실패했습니다.');
+                            setMessageType('error');
+                          }}
+                          showDivider={false}
+                        />
+                      </div>
+                    )}
+                  </div>
+                  
+                  {user?.socialLogins?.google && (
+                    <Text variant="small" style={{ color: '#666' }}>
+                      연결일: {new Date(user.socialLogins.google.connectedAt).toLocaleDateString()}
+                    </Text>
+                  )}
+                </div>
+
+                {/* Kakao 계정 (향후 구현 예정) */}
+                <div style={{
+                  padding: '1rem',
+                  border: '1px solid #e1e5e9',
+                  borderRadius: '8px',
+                  marginBottom: '1rem',
+                  backgroundColor: '#f8f8f8',
+                  opacity: 0.6
+                }}>
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{
+                        width: '24px',
+                        height: '24px',
+                        borderRadius: '50%',
+                        backgroundColor: '#fee500',
+                        marginRight: '0.75rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        color: '#000',
+                        fontSize: '12px',
+                        fontWeight: 'bold'
+                      }}>
+                        K
+                      </div>
+                      <div>
+                        <Text variant="body" style={{ fontWeight: '500', marginBottom: '0.25rem' }}>
+                          Kakao 계정
+                        </Text>
+                        <Text variant="small" style={{ color: '#666' }}>
+                          향후 지원 예정
+                        </Text>
+                      </div>
+                    </div>
+                    
+                    <button
+                      type="button"
+                      disabled
+                      style={{
+                        padding: '0.5rem 1rem',
+                        border: '1px solid #ccc',
+                        backgroundColor: '#f8f9fa',
+                        color: '#666',
+                        borderRadius: '4px',
+                        cursor: 'not-allowed',
+                        fontSize: '0.875rem'
+                      }}
+                    >
+                      준비 중
+                    </button>
+                  </div>
+                </div>
+
+                {/* 안전 설정 안내 */}
+                <div style={{
+                  padding: '1rem',
+                  backgroundColor: '#e7f3ff',
+                  border: '1px solid #b3d9ff',
+                  borderRadius: '8px',
+                  marginTop: '1.5rem'
+                }}>
+                  <Text variant="small" style={{ color: '#0066cc', lineHeight: '1.5' }}>
+                    💡 <strong>보안 팁:</strong><br/>
+                    • 소셜 계정 연결 시 해당 계정으로도 로그인할 수 있습니다.<br/>
+                    • 메인 로그인 방식을 해제하려면 먼저 다른 로그인 방법을 설정하세요.<br/>
+                    • 비밀번호가 없는 소셜 전용 계정의 경우 연결 해제 전 비밀번호를 설정하세요.
+                  </Text>
+                </div>
+              </FormSection>
+            </div>
           )}
           
           <LinkContainer>
