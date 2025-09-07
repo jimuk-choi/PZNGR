@@ -1,84 +1,141 @@
-const API_BASE_URL = 'http://localhost:3001/api';
-
+// Mock image upload service (will be replaced with AWS S3 integration)
 export const imageUploadService = {
   async uploadSingle(file) {
-    const formData = new FormData();
-    formData.append('image', file);
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/upload/single`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('단일 이미지 업로드 실패:', error);
-      throw error;
+    console.log('📁 Mock 단일 이미지 업로드:', file.name);
+    
+    // 실제 API 호출을 모방하기 위해 지연 추가
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    
+    // 파일 검증
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      throw new Error('지원하지 않는 파일 형식입니다.');
     }
+    
+    if (file.size > 10 * 1024 * 1024) { // 10MB
+      throw new Error('파일 크기가 너무 큽니다. (최대 10MB)');
+    }
+    
+    // Mock 업로드 결과 생성
+    const mockResult = {
+      success: true,
+      data: {
+        filename: `${Date.now()}_${file.name}`,
+        originalName: file.name,
+        size: file.size,
+        mimetype: file.type,
+        url: URL.createObjectURL(file), // 임시 blob URL
+        uploadedAt: new Date().toISOString(),
+        optimized: true,
+        versions: {
+          thumbnail: URL.createObjectURL(file),
+          medium: URL.createObjectURL(file),
+          large: URL.createObjectURL(file),
+          original: URL.createObjectURL(file)
+        }
+      }
+    };
+    
+    console.log('✅ Mock 단일 이미지 업로드 완료:', mockResult.data.filename);
+    return mockResult;
   },
 
   async uploadMultiple(files) {
-    const formData = new FormData();
+    console.log('📁 Mock 다중 이미지 업로드:', files.length + '개 파일');
     
-    Array.from(files).forEach(file => {
-      formData.append('images', file);
-    });
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/upload/multiple`, {
-        method: 'POST',
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+    // 실제 API 호출을 모방하기 위해 지연 추가
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    
+    const fileArray = Array.from(files);
+    const results = [];
+    
+    for (const file of fileArray) {
+      try {
+        // 파일 검증
+        const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
+        if (!allowedTypes.includes(file.type)) {
+          throw new Error('지원하지 않는 파일 형식입니다.');
+        }
+        
+        if (file.size > 10 * 1024 * 1024) { // 10MB
+          throw new Error('파일 크기가 너무 큽니다. (최대 10MB)');
+        }
+        
+        // 각 파일에 대해 고유한 Blob URL 생성
+        const blobUrl = URL.createObjectURL(file);
+        
+        const mockData = {
+          filename: `${Date.now()}_${Math.random().toString(36).substring(2, 11)}_${file.name}`,
+          originalName: file.name,
+          size: file.size,
+          mimetype: file.type,
+          url: blobUrl,
+          uploadedAt: new Date().toISOString(),
+          optimized: true,
+          versions: {
+            thumbnail: blobUrl,
+            medium: blobUrl,
+            large: blobUrl,
+            original: blobUrl
+          }
+        };
+        
+        results.push(mockData);
+        console.log(`✅ ${file.name} 업로드 완료`);
+        
+      } catch (error) {
+        console.error(`파일 ${file.name} 업로드 실패:`, error);
+        results.push({
+          filename: file.name,
+          originalName: file.name,
+          error: error.message,
+          success: false
+        });
       }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('다중 이미지 업로드 실패:', error);
-      throw error;
     }
+    
+    const successCount = results.filter(r => r.success !== false).length;
+    const mockResult = {
+      success: successCount > 0,
+      data: results,
+      summary: {
+        total: fileArray.length,
+        success: successCount,
+        failed: fileArray.length - successCount
+      }
+    };
+    
+    console.log(`✅ Mock 다중 이미지 업로드 완료: ${successCount}/${fileArray.length}개 성공`);
+    return mockResult;
   },
 
   async deleteImage(filename) {
-    try {
-      const response = await fetch(`${API_BASE_URL}/upload/${filename}`, {
-        method: 'DELETE',
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('이미지 삭제 실패:', error);
-      throw error;
-    }
+    console.log('🗑️ Mock 이미지 삭제:', filename);
+    
+    await new Promise(resolve => setTimeout(resolve, 500));
+    
+    const mockResult = {
+      success: true,
+      message: `이미지 ${filename}이 삭제되었습니다.`,
+      deletedAt: new Date().toISOString()
+    };
+    
+    console.log('✅ Mock 이미지 삭제 완료:', filename);
+    return mockResult;
   },
 
   async getUploadedImages() {
-    try {
-      const response = await fetch(`${API_BASE_URL}/uploads`);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      return result;
-    } catch (error) {
-      console.error('업로드된 이미지 목록 조회 실패:', error);
-      throw error;
-    }
+    console.log('📋 Mock 업로드된 이미지 목록 조회');
+    
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const mockResult = {
+      success: true,
+      data: [],
+      message: 'Mock 서비스 - 실제 이미지 목록은 AWS S3 연동 후 제공됩니다.'
+    };
+    
+    console.log('✅ Mock 이미지 목록 조회 완료');
+    return mockResult;
   }
 };

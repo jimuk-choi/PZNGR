@@ -197,6 +197,44 @@ const ProductManagement = () => {
             onUploadComplete={handleUploadComplete}
             onUploadError={handleUploadError}
           />
+
+          {productData.images.length > 0 && (
+            <S.UploadedImagesSection>
+              <Text variant="h4">업로드된 이미지 ({productData.images.length}개)</Text>
+              <S.ImageGrid>
+                {productData.images.map((image, index) => (
+                  <S.ImageCard key={image.filename || index}>
+                    <S.ImagePreview 
+                      src={image.url} 
+                      alt={image.originalName}
+                      onLoad={() => console.log(`이미지 로드됨: ${image.originalName}`)}
+                      onError={() => console.error(`이미지 로드 실패: ${image.originalName}`)}
+                    />
+                    <S.ImageInfo>
+                      <S.FileName title={image.originalName}>
+                        {image.originalName}
+                      </S.FileName>
+                      <S.FileSize>
+                        {(image.size / 1024).toFixed(1)} KB
+                      </S.FileSize>
+                      <S.RemoveButton 
+                        onClick={() => {
+                          const newImages = productData.images.filter((_, i) => i !== index);
+                          setProductData(prev => ({ ...prev, images: newImages }));
+                          // Blob URL 정리
+                          if (image.url && image.url.startsWith('blob:')) {
+                            URL.revokeObjectURL(image.url);
+                          }
+                        }}
+                      >
+                        삭제
+                      </S.RemoveButton>
+                    </S.ImageInfo>
+                  </S.ImageCard>
+                ))}
+              </S.ImageGrid>
+            </S.UploadedImagesSection>
+          )}
         </S.FormSection>
 
         <S.ButtonGroup>
