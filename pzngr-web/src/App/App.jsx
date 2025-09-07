@@ -55,7 +55,11 @@ function App() {
   // 앱 준비 완료 - 정상 라우팅
   if (canProceed) {
     return (
-      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+      <GoogleOAuthProvider 
+        clientId={GOOGLE_CLIENT_ID}
+        onScriptLoadError={() => console.error('Google OAuth 스크립트 로드 실패')}
+        onScriptLoadSuccess={() => console.log('Google OAuth 스크립트 로드 성공')}
+      >
         <ThemeProvider theme={theme}>
           <GlobalStyle />
           <Router>

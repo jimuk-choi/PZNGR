@@ -199,9 +199,16 @@ const Login = () => {
   };
 
   // Google OAuth 실패 처리
-  const handleGoogleError = () => {
-    console.log('Google 로그인 취소 또는 실패');
-    setSubmitMessage('Google 로그인이 취소되었습니다.');
+  const handleGoogleError = (error) => {
+    console.error('Google 로그인 에러:', error);
+    
+    if (error?.error === 'popup_closed_by_user') {
+      setSubmitMessage('Google 로그인이 취소되었습니다.');
+    } else if (error?.error === 'access_denied') {
+      setSubmitMessage('Google 로그인 권한이 거부되었습니다.');
+    } else {
+      setSubmitMessage('Google 로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    }
   };
 
   return (
