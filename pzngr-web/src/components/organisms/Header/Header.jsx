@@ -24,7 +24,7 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const { totalCount } = useCartStore();
-  const { isAuthenticated, logout, user } = useUserStore();
+  const { isAuthenticated, logout, user, isAdmin } = useUserStore();
 
   const handleMobileMenuOpen = () => {
     setIsMobileMenuOpen(true);
@@ -56,8 +56,11 @@ const Header = () => {
       <StyledHeader>
         <HeaderWrapper>
           <MenuGroup>
-            <MenuItem to="/shop">SHOP1</MenuItem>
+            <MenuItem to="/shop">SHOP</MenuItem>
             <MenuItem to="/customer-service">고객센터</MenuItem>
+            {isAuthenticated() && isAdmin() && (
+              <MenuItem to="/admin/products">관리자</MenuItem>
+            )}
           </MenuGroup>
 
           <LogoWrapper>
