@@ -793,3 +793,252 @@ export const restoreDeletedUser = async (userId, adminId) => {
     };
   }
 };
+
+// ========================================
+// Google OAuth 관련 함수들
+// ========================================
+
+// JWT 토큰 디코딩 (Google OAuth 토큰 검증용)
+const decodeGoogleJWT = (token) => {
+  try {
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map(c => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
+  } catch (error) {
+    console.error('JWT 토큰 디코딩 오류:', error);
+    return null;
+  }
+};
+
+// Google OAuth 로그인 처리
+export const handleGoogleLogin = async (credentialResponse) => {
+  try {
+    console.log('🔐 Google OAuth 로그인 처리 중...');
+    
+    if (!credentialResponse || !credentialResponse.credential) {
+      return {
+        success: false,
+        message: 'Google 인증 정보를 받지 못했습니다.'
+      };
+    }
+    
+    // Google JWT 토큰 디코딩
+    const googleUserInfo = decodeGoogleJWT(credentialResponse.credential);
+    
+    if (!googleUserInfo) {
+      return {
+        success: false,
+        message: 'Google 사용자 정보를 처리할 수 없습니다.'
+      };
+    }
+    
+    console.log('📋 Google 사용자 정보:', {
+      email: googleUserInfo.email,
+      name: googleUserInfo.name,
+      picture: googleUserInfo.picture,
+      email_verified: googleUserInfo.email_verified
+    });
+    
+    // 기존 사용자 확인
+    let existingUser = getUserByEmail(googleUserInfo.email);
+    
+    if (existingUser) {
+      // 기존 사용자가 일반 계정인 경우 소셜 로그인 정보 추가
+      if (!existingUser.socialLogins) {
+        existingUser.socialLogins = {};
+      }
+      
+      if (!existingUser.socialLogins.google) {
+        existingUser.socialLogins.google = {
+          id: googleUserInfo.sub,
+          email: googleUserInfo.email,
+          name: googleUserInfo.name,
+          picture: googleUserInfo.picture,
+          connectedAt: new Date().toISOString()
+        };
+        
+        // mockUsers 업데이트
+        const userIndex = mockUsers.findIndex(u => u.id === existingUser.id);
+        if (userIndex >= 0) {
+          mockUsers[userIndex] = existingUser;
+        }
+        
+        console.log('✅ 기존 계정에 Google 로그인 연동 완료');
+      }
+      
+      // JWT 토큰 생성
+      const tokenResult = await generateTokenPair({
+        userId: existingUser.id,
+        email: existingUser.email,
+        name: existingUser.name,
+        role: existingUser.role
+      });
+      
+      if (!tokenResult.success) {
+        return {
+          success: false,
+          message: '토큰 생성 중 오류가 발생했습니다.'
+        };
+      }
+      
+      console.log('✅ Google OAuth 로그인 성공 (기존 사용자):', existingUser.email);
+      
+      return {
+        success: true,
+        message: 'Google 계정으로 로그인되었습니다.',
+        user: {
+          id: existingUser.id,
+          email: existingUser.email,
+          name: existingUser.name,
+          phone: existingUser.phone || null,
+          birthDate: existingUser.birthDate || null,
+          role: existingUser.role,
+          profileImage: googleUserInfo.picture || existingUser.profileImage
+        },
+        token: tokenResult.accessToken,
+        refreshToken: tokenResult.refreshToken
+      };
+    } else {
+      // 새 사용자 생성 (Google OAuth)
+      const newUserId = Date.now().toString();
+      const newUser = {
+        id: newUserId,
+        email: googleUserInfo.email,
+        name: googleUserInfo.name,
+        phone: null,
+        birthDate: null,
+        password: null, // 소셜 로그인은 비밀번호 없음
+        role: 'user',
+        profileImage: googleUserInfo.picture,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        isEmailVerified: googleUserInfo.email_verified || false,
+        status: 'active',
+        loginProvider: 'google', // 메인 로그인 방식
+        socialLogins: {
+          google: {
+            id: googleUserInfo.sub,
+            email: googleUserInfo.email,
+            name: googleUserInfo.name,
+            picture: googleUserInfo.picture,
+            connectedAt: new Date().toISOString()
+          }
+        }
+      };
+      
+      // mockUsers에 추가
+      mockUsers.push(newUser);
+      
+      // JWT 토큰 생성
+      const tokenResult = await generateTokenPair({
+        userId: newUser.id,
+        email: newUser.email,
+        name: newUser.name,
+        role: newUser.role
+      });
+      
+      if (!tokenResult.success) {
+        // 사용자 생성 롤백
+        const index = mockUsers.findIndex(u => u.id === newUserId);
+        if (index >= 0) {
+          mockUsers.splice(index, 1);
+        }
+        
+        return {
+          success: false,
+          message: '토큰 생성 중 오류가 발생했습니다.'
+        };
+      }
+      
+      console.log('✅ Google OAuth 로그인 성공 (신규 사용자):', newUser.email);
+      
+      return {
+        success: true,
+        message: 'Google 계정으로 가입 및 로그인되었습니다.',
+        user: {
+          id: newUser.id,
+          email: newUser.email,
+          name: newUser.name,
+          phone: newUser.phone,
+          birthDate: newUser.birthDate,
+          role: newUser.role,
+          profileImage: newUser.profileImage
+        },
+        token: tokenResult.accessToken,
+        refreshToken: tokenResult.refreshToken,
+        isNewUser: true
+      };
+    }
+    
+  } catch (error) {
+    console.error('❌ Google OAuth 로그인 오류:', error);
+    return {
+      success: false,
+      message: 'Google 로그인 처리 중 오류가 발생했습니다. 다시 시도해 주세요.'
+    };
+  }
+};
+
+// Google OAuth 연결 해제
+export const disconnectGoogleAccount = async (userId) => {
+  try {
+    console.log('🔗 Google 계정 연결 해제 중...', { userId });
+    
+    const user = getUserById(userId);
+    if (!user) {
+      return {
+        success: false,
+        message: '사용자를 찾을 수 없습니다.'
+      };
+    }
+    
+    if (!user.socialLogins || !user.socialLogins.google) {
+      return {
+        success: false,
+        message: '연결된 Google 계정을 찾을 수 없습니다.'
+      };
+    }
+    
+    // Google 로그인이 메인 로그인 방식인 경우 연결 해제 불가
+    if (user.loginProvider === 'google' && !user.password) {
+      return {
+        success: false,
+        message: 'Google 계정이 유일한 로그인 방식입니다. 먼저 비밀번호를 설정해주세요.'
+      };
+    }
+    
+    // Google 계정 연결 해제
+    delete user.socialLogins.google;
+    
+    // 소셜 로그인이 더 이상 없는 경우
+    if (Object.keys(user.socialLogins).length === 0) {
+      delete user.socialLogins;
+    }
+    
+    // mockUsers 업데이트
+    const userIndex = mockUsers.findIndex(u => u.id === user.id);
+    if (userIndex >= 0) {
+      mockUsers[userIndex] = user;
+    }
+    
+    console.log('✅ Google 계정 연결 해제 완료:', user.email);
+    
+    return {
+      success: true,
+      message: 'Google 계정 연결이 해제되었습니다.'
+    };
+    
+  } catch (error) {
+    console.error('❌ Google 계정 연결 해제 오류:', error);
+    return {
+      success: false,
+      message: 'Google 계정 연결 해제 중 오류가 발생했습니다.'
+    };
+  }
+};

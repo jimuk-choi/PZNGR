@@ -3,10 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { StyledLoginPage, FormContainer, FormSection, FormRow, ErrorMessage, SuccessMessage } from './Auth.styles';
 import { useUserStore } from '../../stores/userStore';
 import { validateLoginForm } from '../../utils/validation';
-import { loginUser, getTestEmails } from '../../services/authService';
+import { loginUser, getTestEmails, handleGoogleLogin } from '../../services/authService';
 import MainLayout from '../../components/layouts/MainLayout';
 import Button from '../../components/atoms/Button';
 import Text from '../../components/atoms/Text';
+import GoogleLoginButton from '../../components/atoms/GoogleLoginButton';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -116,6 +117,82 @@ const Login = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Google OAuth 성공 처리
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      setIsSubmitting(true);
+      setSubmitMessage('');
+      
+      console.log('Google 로그인 시도 중...', credentialResponse);
+      
+      const result = await handleGoogleLogin(credentialResponse);
+      
+      if (result.success) {
+        // userStore를 통한 로그인 처리
+        const userDataWithTokens = {
+          ...result.user,
+          tokens: {
+            tokenType: 'Bearer',
+            accessToken: result.token,
+            refreshToken: result.refreshToken
+          }
+        };
+
+        console.log('🔍 Google 로그인 결과 토큰 확인:', {
+          hasToken: !!result.token,
+          hasRefreshToken: !!result.refreshToken,
+          token: result.token ? 'exists' : 'missing',
+          refreshToken: result.refreshToken ? 'exists' : 'missing',
+          fullResult: result
+        });
+
+        // 토큰이 없는 경우 빈 문자열 대신 임시 토큰 생성
+        if (!result.token || !result.refreshToken) {
+          console.warn('⚠️ Google OAuth에서 토큰을 받지 못했습니다. 임시 토큰을 생성합니다.');
+          userDataWithTokens.tokens = {
+            tokenType: 'Bearer',
+            accessToken: `google_temp_${Date.now()}_${result.user.id}`,
+            refreshToken: `refresh_temp_${Date.now()}_${result.user.id}`
+          };
+        }
+        
+        const loginResult = await login(userDataWithTokens, true);
+        
+        if (loginResult.success) {
+          setSubmitMessage(result.isNewUser 
+            ? 'Google 계정으로 가입 및 로그인되었습니다!' 
+            : 'Google 계정으로 로그인되었습니다!'
+          );
+          
+          console.log('✅ Google 로그인 성공:', {
+            user: result.user.email,
+            isNewUser: result.isNewUser
+          });
+          
+          // 1초 후 메인 페이지로 이동
+          setTimeout(() => {
+            navigate('/');
+          }, 1000);
+        } else {
+          setSubmitMessage('로그인 처리 중 오류가 발생했습니다.');
+        }
+      } else {
+        setSubmitMessage(result.message || 'Google 로그인에 실패했습니다.');
+      }
+    } catch (error) {
+      console.error('Google 로그인 오류:', error);
+      setSubmitMessage('Google 로그인 중 오류가 발생했습니다. 다시 시도해 주세요.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Google OAuth 실패 처리
+  const handleGoogleError = () => {
+    console.log('Google 로그인 취소 또는 실패');
+    setSubmitMessage('Google 로그인이 취소되었습니다.');
   };
 
   return (
@@ -290,6 +367,13 @@ const Login = () => {
               </div>
             )}
           </form>
+
+          {/* Google OAuth 로그인 */}
+          <GoogleLoginButton 
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleError}
+            showDivider={true}
+          />
         </FormContainer>
       </StyledLoginPage>
     </MainLayout>

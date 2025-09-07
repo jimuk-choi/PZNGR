@@ -1,6 +1,7 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "styled-components";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { theme, GlobalStyle } from "../shared/styles";
 import { useAppInitialization } from "../hooks/useAppInitialization.jsx";
 import ScrollToTop from "../components/atoms/ScrollToTop";
@@ -13,6 +14,9 @@ import CustomerService from "../pages/CustomerService";
 import Cart from "../pages/Cart";
 import MyPage from "../pages/MyPage";
 import { Login, Register, ForgotPassword, ResetPassword, EditProfile, DeleteAccount } from "../pages/Auth";
+
+// Google OAuth Client ID
+const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID || "626950598844-qhf3a0i33c6jbfuhpdkrq2ltuuaoblej.apps.googleusercontent.com";
 
 function App() {
   const {
@@ -51,29 +55,31 @@ function App() {
   // 앱 준비 완료 - 정상 라우팅
   if (canProceed) {
     return (
-      <ThemeProvider theme={theme}>
-        <GlobalStyle />
-        <Router>
-          <ScrollToTop />
-          <Routes>
-            <Route path="/" element={<Main />} />
-            <Route path="/shop" element={<Shop />} />
-            <Route path="/product/:slug" element={<ProductDetail />} />
-            <Route path="/customer-service" element={<CustomerService />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/my-page" element={<MyPage />} />
-            <Route path="/auth/login" element={<Login />} />
-            <Route path="/auth/register" element={<Register />} />
-            <Route path="/auth/forgot-password" element={<ForgotPassword />} />
-            <Route path="/auth/reset-password" element={<ResetPassword />} />
-            <Route path="/auth/edit-profile" element={<EditProfile />} />
-            <Route path="/auth/delete-account" element={<DeleteAccount />} />
-            {/* 기존 호환성을 위한 리다이렉트 */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-          </Routes>
-        </Router>
-      </ThemeProvider>
+      <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
+        <ThemeProvider theme={theme}>
+          <GlobalStyle />
+          <Router>
+            <ScrollToTop />
+            <Routes>
+              <Route path="/" element={<Main />} />
+              <Route path="/shop" element={<Shop />} />
+              <Route path="/product/:slug" element={<ProductDetail />} />
+              <Route path="/customer-service" element={<CustomerService />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/my-page" element={<MyPage />} />
+              <Route path="/auth/login" element={<Login />} />
+              <Route path="/auth/register" element={<Register />} />
+              <Route path="/auth/forgot-password" element={<ForgotPassword />} />
+              <Route path="/auth/reset-password" element={<ResetPassword />} />
+              <Route path="/auth/edit-profile" element={<EditProfile />} />
+              <Route path="/auth/delete-account" element={<DeleteAccount />} />
+              {/* 기존 호환성을 위한 리다이렉트 */}
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+            </Routes>
+          </Router>
+        </ThemeProvider>
+      </GoogleOAuthProvider>
     );
   }
 
