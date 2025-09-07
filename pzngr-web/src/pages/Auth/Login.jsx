@@ -8,7 +8,8 @@ import MainLayout from '../../components/layouts/MainLayout';
 import Button from '../../components/atoms/Button';
 import Text from '../../components/atoms/Text';
 // import GoogleLoginButton from '../../components/atoms/GoogleLoginButton';
-import GoogleLoginAlternative from '../../components/atoms/GoogleLoginAlternative';
+// import GoogleLoginAlternative from '../../components/atoms/GoogleLoginAlternative';
+import GoogleLoginIframe from '../../components/atoms/GoogleLoginIframe';
 
 const Login = () => {
   const navigate = useNavigate();
@@ -385,19 +386,12 @@ const Login = () => {
             )}
           </form>
 
-          {/* Google OAuth 로그인 - COOP 에러 우회용 대체 버전 */}
-          <GoogleLoginAlternative 
+          {/* Google OAuth 로그인 - iframe 방식으로 COOP 에러 해결 */}
+          <GoogleLoginIframe 
             onSuccess={handleGoogleSuccess}
             onError={handleGoogleError}
             showDivider={true}
           />
-          
-          {/* 원본 Google 로그인 (COOP 에러 발생 시 주석 처리됨) */}
-          {/* <GoogleLoginButton 
-            onSuccess={handleGoogleSuccess}
-            onError={handleGoogleError}
-            showDivider={true}
-          /> */}
         </FormContainer>
       </StyledLoginPage>
     </MainLayout>
