@@ -59,7 +59,7 @@ const Header = () => {
             <MenuItem to="/shop">SHOP</MenuItem>
             <MenuItem to="/customer-service">고객센터</MenuItem>
             {isAuthenticated() && isAdmin() && (
-              <MenuItem to="/admin/products">관리자</MenuItem>
+              <MenuItem to="/admin">관리자</MenuItem>
             )}
           </MenuGroup>
 

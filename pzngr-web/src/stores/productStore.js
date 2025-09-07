@@ -3,13 +3,6 @@ import { persist } from 'zustand/middleware';
 import { createJSONStorage } from './utils/localStorage';
 import { mockProducts } from '../data/mockProducts';
 
-// 카테고리 데이터
-const categories = [
-  { id: 'tshirt', name: 'T-Shirt', description: '티셔츠' },
-  { id: 'shorts', name: 'Shorts', description: '반바지' },
-  { id: 'all', name: 'All', description: '전체' }
-];
-
 // 상품 데이터를 store 형식에 맞게 변환
 const formatProducts = (products) => {
   return products.map(product => ({
@@ -31,7 +24,6 @@ const formatProducts = (products) => {
 const initialState = {
   products: formatProducts(mockProducts),
   currentProduct: null,
-  categories: categories,
   selectedCategory: 'all',
   loading: false,
   error: null,

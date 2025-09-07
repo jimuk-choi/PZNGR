@@ -14,7 +14,7 @@ import CustomerService from "../pages/CustomerService";
 import Cart from "../pages/Cart";
 import MyPage from "../pages/MyPage";
 import { Login, Register, ForgotPassword, ResetPassword, EditProfile, DeleteAccount } from "../pages/Auth";
-import { ProductManagement } from "../pages/Admin";
+import { ProductManagement, CategoryManagement, AdminDashboard } from "../pages/Admin";
 import AdminRoute from "../components/atoms/AdminRoute";
 
 // Google OAuth Client ID
@@ -79,7 +79,17 @@ function App() {
               <Route path="/auth/reset-password" element={<ResetPassword />} />
               <Route path="/auth/edit-profile" element={<EditProfile />} />
               <Route path="/auth/delete-account" element={<DeleteAccount />} />
+              <Route path="/admin" element={
+                <AdminRoute>
+                  <AdminDashboard />
+                </AdminRoute>
+              } />
               <Route path="/admin/products" element={
+                <AdminRoute>
+                  <ProductManagement />
+                </AdminRoute>
+              } />
+              <Route path="/admin/products/new" element={
                 <AdminRoute>
                   <ProductManagement />
                 </AdminRoute>
@@ -87,6 +97,11 @@ function App() {
               <Route path="/admin/products/edit/:productId" element={
                 <AdminRoute>
                   <ProductManagement />
+                </AdminRoute>
+              } />
+              <Route path="/admin/categories" element={
+                <AdminRoute>
+                  <CategoryManagement />
                 </AdminRoute>
               } />
               {/* 기존 호환성을 위한 리다이렉트 */}

@@ -5,6 +5,7 @@ import Text from "../../components/atoms/Text";
 import Button from "../../components/atoms/Button";
 import { ImageUpload } from "../../components/molecules";
 import { useProductStore } from "../../stores/productStore";
+import { useCategoryStore } from "../../stores/categoryStore";
 import * as S from "./ProductManagement.styles";
 
 const ProductManagement = () => {
@@ -15,6 +16,8 @@ const ProductManagement = () => {
   const getProductById = useProductStore((state) => state.getProductById);
   const addProduct = useProductStore((state) => state.addProduct);
   const updateProduct = useProductStore((state) => state.updateProduct);
+  
+  const getActiveCategories = useCategoryStore((state) => state.getActiveCategories);
 
   const [productData, setProductData] = useState({
     name: "",
@@ -242,10 +245,11 @@ const ProductManagement = () => {
               required
             >
               <option value="">카테고리 선택</option>
-              <option value="darts">다트</option>
-              <option value="accessories">액세서리</option>
-              <option value="cases">케이스</option>
-              <option value="boards">보드</option>
+              {getActiveCategories().map(category => (
+                <option key={category.id} value={category.id}>
+                  {'  '.repeat(category.level)}{category.name}
+                </option>
+              ))}
             </S.Select>
           </S.InputGroup>
 

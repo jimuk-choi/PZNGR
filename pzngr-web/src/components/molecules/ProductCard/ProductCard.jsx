@@ -61,10 +61,19 @@ const ProductCard = ({ product, showAdminControls = false }) => {
           </ProductName>
           <ProductPrice>
             <Text weight="bold">
-              {typeof product.price === 'string' 
-                ? product.price 
-                : `${(product.price.sale || product.price.regular).toLocaleString('ko-KR')} 원`
-              }
+              {(() => {
+                if (typeof product.price === 'string') {
+                  return product.price;
+                }
+                if (typeof product.price === 'number') {
+                  return `${product.price.toLocaleString('ko-KR')} 원`;
+                }
+                if (product.price && typeof product.price === 'object') {
+                  const price = product.price.sale || product.price.regular;
+                  return price ? `${price.toLocaleString('ko-KR')} 원` : '가격 문의';
+                }
+                return '가격 문의';
+              })()}
             </Text>
           </ProductPrice>
         </ProductInfo>
