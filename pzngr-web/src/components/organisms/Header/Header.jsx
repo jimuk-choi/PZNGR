@@ -56,7 +56,7 @@ const Header = () => {
       <StyledHeader>
         <HeaderWrapper>
           <MenuGroup>
-            <MenuItem to="/shop">SHOP</MenuItem>
+            <MenuItem to="/shop">SHOP1</MenuItem>
             <MenuItem to="/customer-service">고객센터</MenuItem>
           </MenuGroup>
 
