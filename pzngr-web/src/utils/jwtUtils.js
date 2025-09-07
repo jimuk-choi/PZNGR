@@ -130,8 +130,8 @@ export const verifyToken = async (token, options = {}) => {
   } catch (error) {
     console.error('❌ Token verification failed:', error.name, error.message);
 
-    // 임시 토큰 처리 (개발/테스트용)
-    if (token && token.includes('.')) {
+    // 임시 토큰 처리 (개발/테스트용) - 로컬 환경에서만
+    if (process.env.NODE_ENV === 'development' && token && token.includes('.')) {
       try {
         const parts = token.split('.');
         if (parts.length === 3) {
