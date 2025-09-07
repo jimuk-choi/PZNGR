@@ -6,6 +6,7 @@ import Button from "../../components/atoms/Button";
 import { useUserStore } from "../../stores/userStore";
 import { useProductStore } from "../../stores/productStore";
 import { useCategoryStore } from "../../stores/categoryStore";
+import { useCouponStore } from "../../stores/couponStore";
 import * as S from "./AdminDashboard.styles";
 
 const AdminDashboard = () => {
@@ -13,11 +14,16 @@ const AdminDashboard = () => {
   const user = useUserStore((state) => state.user);
   const products = useProductStore((state) => state.products);
   const categories = useCategoryStore((state) => state.categories);
+  const { getCouponStatistics } = useCouponStore();
 
+  const couponStats = getCouponStatistics();
+  
   const stats = {
     totalProducts: products.length,
     totalCategories: categories.length,
-    activeCategories: categories.filter(cat => cat.isActive).length
+    activeCategories: categories.filter(cat => cat.isActive).length,
+    totalCoupons: couponStats.total,
+    activeCoupons: couponStats.active
   };
 
   return (
@@ -43,6 +49,16 @@ const AdminDashboard = () => {
         <S.StatCard>
           <S.StatNumber>{stats.activeCategories}</S.StatNumber>
           <S.StatLabel>활성 카테고리</S.StatLabel>
+        </S.StatCard>
+        
+        <S.StatCard>
+          <S.StatNumber>{stats.totalCoupons}</S.StatNumber>
+          <S.StatLabel>총 쿠폰 수</S.StatLabel>
+        </S.StatCard>
+        
+        <S.StatCard>
+          <S.StatNumber>{stats.activeCoupons}</S.StatNumber>
+          <S.StatLabel>활성 쿠폰</S.StatLabel>
         </S.StatCard>
       </S.StatsGrid>
 
@@ -88,6 +104,24 @@ const AdminDashboard = () => {
                 onClick={() => navigate('/admin/categories')}
               >
                 카테고리 관리로 이동
+              </Button>
+            </S.CardActions>
+          </S.ManagementCard>
+
+          <S.ManagementCard>
+            <S.CardHeader>
+              <S.CardIcon>🎟️</S.CardIcon>
+              <S.CardTitle>쿠폰 관리</S.CardTitle>
+            </S.CardHeader>
+            <S.CardDescription>
+              할인 쿠폰을 생성하고 관리하며 프로모션을 설정할 수 있습니다.
+            </S.CardDescription>
+            <S.CardActions>
+              <Button 
+                variant="primary" 
+                onClick={() => navigate('/admin/coupons')}
+              >
+                쿠폰 관리로 이동
               </Button>
             </S.CardActions>
           </S.ManagementCard>

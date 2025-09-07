@@ -4,6 +4,7 @@ import Container from "../../components/atoms/Container";
 import Text from "../../components/atoms/Text";
 import Button from "../../components/atoms/Button";
 import { ImageUpload } from "../../components/molecules";
+import ProductOptions from "../../components/molecules/ProductOptions";
 import { useProductStore } from "../../stores/productStore";
 import { useCategoryStore } from "../../stores/categoryStore";
 import * as S from "./ProductManagement.styles";
@@ -25,6 +26,7 @@ const ProductManagement = () => {
     description: "",
     category: "",
     images: [],
+    options: [],
   });
 
   const [uploadStatus, setUploadStatus] = useState("");
@@ -70,6 +72,7 @@ const ProductManagement = () => {
           description: existingProduct.description || "",
           category: existingProduct.category || "",
           images: existingImages,
+          options: existingProduct.options || [],
         });
       } else {
         alert('상품을 찾을 수 없습니다.');
@@ -172,6 +175,7 @@ const ProductManagement = () => {
         main: productData.images[0].url,
         gallery: productData.images.map(img => img.url)
       } : (isEditMode ? { main: '', gallery: [] } : null),
+      options: productData.options,
       stock: 10,
     };
 
@@ -345,6 +349,14 @@ const ProductManagement = () => {
               </S.ImageGrid>
             </S.UploadedImagesSection>
           )}
+        </S.FormSection>
+
+        <S.FormSection>
+          <Text variant="h3">상품 옵션</Text>
+          <ProductOptions
+            options={productData.options}
+            onChange={(options) => setProductData(prev => ({ ...prev, options }))}
+          />
         </S.FormSection>
 
         <S.ButtonGroup>

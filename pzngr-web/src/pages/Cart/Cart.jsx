@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.jsx";
 import Container from "../../components/atoms/Container/Container.jsx";
 import Text from "../../components/atoms/Text/Text.jsx";
 import Button from "../../components/atoms/Button/Button.jsx";
+import CouponApplicator from "../../components/molecules/CouponApplicator";
 import { useCartStore } from "../../stores/cartStore.js";
+import { useCouponStore } from "../../stores/couponStore.js";
 import {
   CartContainer,
   CartTitle,
@@ -25,6 +27,9 @@ import {
 } from "./Cart.styles.jsx";
 
 const Cart = () => {
+  const [appliedCoupon, setAppliedCoupon] = useState(null);
+  const [discountAmount, setDiscountAmount] = useState(0);
+  
   const {
     items,
     totalCount,
@@ -32,11 +37,29 @@ const Cart = () => {
     increaseQuantity,
     decreaseQuantity,
     removeFromCart,
-    getFormattedTotalPrice,
     getItemDisplayName,
     getFormattedItemPrice,
     clearCart,
+    getTotalPrice,
   } = useCartStore();
+  
+  const { useCoupon: updateCouponUsage } = useCouponStore();
+  
+  const totalPrice = getTotalPrice();
+  const finalPrice = totalPrice - discountAmount;
+  const formattedFinalPrice = finalPrice.toLocaleString();
+  
+  const orderItems = useMemo(() => {
+    return items.map(item => ({
+      id: item.productId || item.id,
+      productId: item.productId || item.id,
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      category: item.category,
+      selectedOptions: item.selectedOptions || []
+    }));
+  }, [items]);
 
   const handleQuantityIncrease = (itemId) => {
     increaseQuantity(itemId);
@@ -50,15 +73,36 @@ const Cart = () => {
     removeFromCart(itemId);
   };
 
+  const handleCouponApply = (couponData) => {
+    setAppliedCoupon({
+      ...couponData.coupon,
+      discountAmount: couponData.discountAmount
+    });
+    setDiscountAmount(couponData.discountAmount);
+    
+    // 쿠폰 사용 카운트 증가
+    updateCouponUsage(couponData.coupon.id);
+  };
+
+  const handleCouponRemove = () => {
+    setAppliedCoupon(null);
+    setDiscountAmount(0);
+  };
+
   const handleCheckout = () => {
-    // 주문 페이지로 이동하는 로직 추가 예정
-    console.log('주문하기 클릭됨');
-    alert('주문 기능은 추후 구현 예정입니다.');
+    if (appliedCoupon) {
+      console.log('적용된 쿠폰:', appliedCoupon);
+      console.log('할인 금액:', discountAmount);
+      console.log('최종 결제 금액:', finalPrice);
+    }
+    alert(`주문 기능은 추후 구현 예정입니다.\n${appliedCoupon ? `쿠폰 할인: ${discountAmount.toLocaleString()}원\n` : ''}최종 금액: ${formattedFinalPrice}원`);
   };
 
   const handleClearCart = () => {
     if (window.confirm('장바구니를 비우시겠습니까?')) {
       clearCart();
+      setAppliedCoupon(null);
+      setDiscountAmount(0);
     }
   };
 
@@ -136,16 +180,44 @@ const Cart = () => {
                 ))}
               </CartItemsContainer>
               
+              <CouponApplicator
+                orderAmount={totalPrice}
+                orderItems={orderItems}
+                onCouponApply={handleCouponApply}
+                onCouponRemove={handleCouponRemove}
+                appliedCoupon={appliedCoupon}
+                disabled={totalPrice === 0}
+              />
+              
               <CartSummary>
+                <div style={{ marginBottom: '1rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                    <Text size="md">상품 금액:</Text>
+                    <Text size="md">{totalPrice.toLocaleString()}원</Text>
+                  </div>
+                  {discountAmount > 0 && (
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
+                      <Text size="md" color="green">쿠폰 할인:</Text>
+                      <Text size="md" color="green">-{discountAmount.toLocaleString()}원</Text>
+                    </div>
+                  )}
+                  <hr style={{ margin: '0.5rem 0', border: '1px solid #eee' }} />
+                </div>
+                
                 <CartTotal>
                   <Text size="lg" weight="semibold">
-                    총 결제금액: {getFormattedTotalPrice()}
+                    총 결제금액: {formattedFinalPrice}원
                   </Text>
+                  {discountAmount > 0 && (
+                    <Text size="sm" color="green" style={{ marginTop: '0.25rem' }}>
+                      {discountAmount.toLocaleString()}원 할인 적용됨
+                    </Text>
+                  )}
                 </CartTotal>
                 
                 <CheckoutButton>
                   <Button variant="primary" size="large" onClick={handleCheckout}>
-                    주문하기
+                    {finalPrice === 0 ? '무료 주문하기' : `${formattedFinalPrice}원 주문하기`}
                   </Button>
                 </CheckoutButton>
               </CartSummary>
