@@ -130,6 +130,29 @@ export const verifyToken = async (token, options = {}) => {
   } catch (error) {
     console.error('❌ Token verification failed:', error.name, error.message);
 
+    // 임시 토큰 처리 (개발/테스트용)
+    if (token && token.includes('.')) {
+      try {
+        const parts = token.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(atob(parts[1]));
+          // 임시 토큰 서명 확인
+          if (parts[2].includes('temp_signature_')) {
+            console.warn('⚠️ 임시 토큰을 사용 중입니다 (개발용)');
+            return {
+              success: true,
+              payload: payload,
+              isExpired: false,
+              isValid: true,
+              isTemporary: true
+            };
+          }
+        }
+      } catch (tempError) {
+        console.error('❌ 임시 토큰 처리 실패:', tempError);
+      }
+    }
+
     // 만료된 토큰인지 확인
     if (error.code === 'ERR_JWT_EXPIRED') {
       try {

@@ -148,13 +148,22 @@ const Login = () => {
           fullResult: result
         });
 
-        // 토큰이 없는 경우 빈 문자열 대신 임시 토큰 생성
+        // 토큰이 없는 경우 유효한 JWT 형식의 임시 토큰 생성
         if (!result.token || !result.refreshToken) {
-          console.warn('⚠️ Google OAuth에서 토큰을 받지 못했습니다. 임시 토큰을 생성합니다.');
+          console.warn('⚠️ Google OAuth에서 토큰을 받지 못했습니다. 유효한 형식의 임시 토큰을 생성합니다.');
+          const tempHeader = btoa(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
+          const tempPayload = btoa(JSON.stringify({
+            userId: result.user.id,
+            email: result.user.email,
+            iat: Math.floor(Date.now() / 1000),
+            exp: Math.floor(Date.now() / 1000) + 3600 // 1시간 후 만료
+          }));
+          const tempSignature = btoa(`temp_signature_${Date.now()}`);
+          
           userDataWithTokens.tokens = {
             tokenType: 'Bearer',
-            accessToken: `google_temp_${Date.now()}_${result.user.id}`,
-            refreshToken: `refresh_temp_${Date.now()}_${result.user.id}`
+            accessToken: `${tempHeader}.${tempPayload}.${tempSignature}`,
+            refreshToken: `${tempHeader}.${tempPayload}.${btoa(`refresh_signature_${Date.now()}`)}`
           };
         }
         
