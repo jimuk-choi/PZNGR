@@ -55,8 +55,7 @@ const GoogleLoginButton = ({ onSuccess, onError, showDivider = true }) => {
           shape="rectangular"
           logo_alignment="left"
           context="signin"
-          ux_mode="popup"
-          cancel_on_tap_outside={true}
+          ux_mode="redirect"
         />
       </GoogleLoginWrapper>
     </>
