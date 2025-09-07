@@ -7,7 +7,7 @@ import { loginUser, getTestEmails, handleGoogleLogin } from '../../services/auth
 import MainLayout from '../../components/layouts/MainLayout';
 import Button from '../../components/atoms/Button';
 import Text from '../../components/atoms/Text';
-import GoogleLoginButton from '../../components/atoms/GoogleLoginButton';
+// import GoogleLoginButton from '../../components/atoms/GoogleLoginButton';
 import GoogleLoginAlternative from '../../components/atoms/GoogleLoginAlternative';
 
 const Login = () => {
