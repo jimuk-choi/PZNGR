@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Container from "../../components/atoms/Container";
 import Text from "../../components/atoms/Text";
 import Button from "../../components/atoms/Button";
 import { useCategoryStore } from "../../stores/categoryStore";
-import { FILTER_TYPE } from "../../models/Category";
 import * as S from "./CategoryManagement.styles";
 
 const CategoryManagement = () => {

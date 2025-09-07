@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import PageTemplate from "../../components/templates/PageTemplate/PageTemplate.jsx";
 import Container from "../../components/atoms/Container/Container.jsx";
 import Text from "../../components/atoms/Text/Text.jsx";
