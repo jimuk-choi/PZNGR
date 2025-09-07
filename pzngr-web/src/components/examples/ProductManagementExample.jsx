@@ -95,13 +95,13 @@ const Button = styled.button`
   padding: 8px 16px;
   margin: 4px;
   background: ${props => {
-    if (props.variant === 'primary') return '#007bff';
-    if (props.variant === 'success') return '#28a745';
-    if (props.variant === 'danger') return '#dc3545';
-    if (props.variant === 'warning') return '#ffc107';
+    if (props.$variant === 'primary') return '#007bff';
+    if (props.$variant === 'success') return '#28a745';
+    if (props.$variant === 'danger') return '#dc3545';
+    if (props.$variant === 'warning') return '#ffc107';
     return '#6c757d';
   }};
-  color: ${props => props.variant === 'warning' ? '#000' : '#fff'};
+  color: ${props => props.$variant === 'warning' ? '#000' : '#fff'};
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -410,7 +410,7 @@ const ProductManagementExample = () => {
         <SectionTitle>
           🛒 상품 목록 관리
           <Button 
-            variant="success" 
+            $variant="success" 
             onClick={startCreateProduct}
             style={{ float: 'right' }}
           >
@@ -499,13 +499,13 @@ const ProductManagementExample = () => {
 
                 <div style={{ marginTop: '10px' }}>
                   <Button 
-                    variant="primary" 
+                    $variant="primary" 
                     onClick={() => startEditProduct(product)}
                   >
                     수정
                   </Button>
                   <Button 
-                    variant="danger" 
+                    $variant="danger" 
                     onClick={() => handleDeleteProduct(product.id)}
                     disabled={product.status === PRODUCT_STATUS.DISCONTINUED}
                   >
@@ -567,7 +567,7 @@ const ProductManagementExample = () => {
         <Section>
           <SectionTitle>
             {isCreating ? '📝 새 상품 등록' : '✏️ 상품 정보 수정'}
-            <Button variant="secondary" onClick={cancelEdit} style={{ float: 'right' }}>
+            <Button $variant="secondary" onClick={cancelEdit} style={{ float: 'right' }}>
               취소
             </Button>
           </SectionTitle>
@@ -698,10 +698,10 @@ const ProductManagementExample = () => {
           </Grid>
 
           <div style={{ textAlign: 'center', marginTop: '20px' }}>
-            <Button variant="success" onClick={handleSaveProduct}>
+            <Button $variant="success" onClick={handleSaveProduct}>
               {isCreating ? '상품 등록' : '수정 완료'}
             </Button>
-            <Button variant="secondary" onClick={cancelEdit}>
+            <Button $variant="secondary" onClick={cancelEdit}>
               취소
             </Button>
           </div>

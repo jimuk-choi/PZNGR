@@ -111,7 +111,7 @@ const ImageUpload = ({
         />
         
         <S.UploadContent>
-          <Text variant="body1" align="center">
+          <Text variant="body1" style={{ textAlign: 'center' }}>
             {dragOver 
               ? '파일을 여기에 놓으세요' 
               : '이미지를 드래그하거나 여기를 클릭하세요'
@@ -126,7 +126,7 @@ const ImageUpload = ({
             {uploading ? '업로드 중...' : '파일 선택'}
           </Button>
           
-          <Text variant="caption" align="center" color="gray">
+          <Text variant="caption" color="gray" style={{ textAlign: 'center' }}>
             {multiple 
               ? `최대 ${maxFiles}개 파일, 각각 최대 5MB` 
               : '최대 5MB'

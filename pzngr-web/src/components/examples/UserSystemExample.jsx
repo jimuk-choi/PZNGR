@@ -99,14 +99,14 @@ const Select = styled.select`
 const Button = styled.button`
   padding: 10px 20px;
   margin: 5px;
-  background: ${props => props.variant === 'danger' ? '#ff4757' : '#007bff'};
+  background: ${props => props.$variant === 'danger' ? '#ff4757' : '#007bff'};
   color: white;
   border: none;
   border-radius: 4px;
   cursor: pointer;
 
   &:hover {
-    background: ${props => props.variant === 'danger' ? '#ff3838' : '#0056b3'};
+    background: ${props => props.$variant === 'danger' ? '#ff3838' : '#0056b3'};
   }
 
   &:disabled {

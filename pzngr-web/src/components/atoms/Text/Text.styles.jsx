@@ -17,6 +17,7 @@ export const StyledText = styled.p`
   margin: 0;
   line-height: normal;
   white-space: nowrap;
+  text-align: ${({ $align }) => $align || 'left'};
 
   ${({ $variant }) =>
     $variant === "menu" &&

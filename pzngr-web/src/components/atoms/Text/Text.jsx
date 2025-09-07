@@ -7,6 +7,7 @@ const Text = ({
   size = "md",
   weight = "normal",
   color = "black",
+  align,
   className = "",
   as = "p",
   ...props 
@@ -18,6 +19,7 @@ const Text = ({
       $size={size}
       $weight={weight}
       $color={color}
+      $align={align}
       className={className}
       {...props}
     >

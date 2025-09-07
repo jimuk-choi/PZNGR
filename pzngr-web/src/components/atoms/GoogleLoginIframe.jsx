@@ -190,7 +190,7 @@ const GoogleLoginIframe = ({ onSuccess, onError, showDivider = true }) => {
         <HiddenIframe
           ref={iframeRef}
           title="Google OAuth iframe"
-          sandbox="allow-scripts allow-same-origin allow-popups"
+          sandbox="allow-scripts allow-popups allow-forms"
         />
       </GoogleLoginWrapper>
     </>
