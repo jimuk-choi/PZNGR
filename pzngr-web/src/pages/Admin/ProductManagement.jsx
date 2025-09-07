@@ -1,13 +1,21 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import Container from "../../components/atoms/Container";
 import Text from "../../components/atoms/Text";
 import Button from "../../components/atoms/Button";
 import { ImageUpload } from "../../components/molecules";
+import { useProductStore } from "../../stores/productStore";
 import * as S from "./ProductManagement.styles";
 
 const ProductManagement = () => {
   const navigate = useNavigate();
+  const { productId } = useParams();
+  const isEditMode = !!productId;
+  
+  const getProductById = useProductStore((state) => state.getProductById);
+  const addProduct = useProductStore((state) => state.addProduct);
+  const updateProduct = useProductStore((state) => state.updateProduct);
+
   const [productData, setProductData] = useState({
     name: "",
     price: "",
@@ -17,6 +25,55 @@ const ProductManagement = () => {
   });
 
   const [uploadStatus, setUploadStatus] = useState("");
+
+  useEffect(() => {
+    if (isEditMode && productId) {
+      const existingProduct = getProductById(productId);
+      if (existingProduct) {
+        const existingImages = [];
+        
+        if (existingProduct.images?.main) {
+          existingImages.push({
+            url: existingProduct.images.main,
+            originalName: 'main-image.jpg',
+            size: 0,
+            mimetype: 'image/jpeg'
+          });
+        } else if (existingProduct.image) {
+          existingImages.push({
+            url: existingProduct.image,
+            originalName: 'product-image.jpg',
+            size: 0,
+            mimetype: 'image/jpeg'
+          });
+        }
+        
+        if (existingProduct.images?.gallery) {
+          existingProduct.images.gallery.forEach((imageUrl, index) => {
+            if (imageUrl && imageUrl !== existingProduct.images.main) {
+              existingImages.push({
+                url: imageUrl,
+                originalName: `gallery-${index + 1}.jpg`,
+                size: 0,
+                mimetype: 'image/jpeg'
+              });
+            }
+          });
+        }
+        
+        setProductData({
+          name: existingProduct.name || "",
+          price: existingProduct.price?.toString() || "",
+          description: existingProduct.description || "",
+          category: existingProduct.category || "",
+          images: existingImages,
+        });
+      } else {
+        alert('상품을 찾을 수 없습니다.');
+        navigate('/admin/products');
+      }
+    }
+  }, [isEditMode, productId, getProductById, navigate]);
 
   const handleUploadComplete = (result) => {
     console.log("업로드 완료:", result);
@@ -95,26 +152,50 @@ const ProductManagement = () => {
       return;
     }
 
-    if (productData.images.length === 0) {
+    if (productData.images.length === 0 && !isEditMode) {
       const confirmWithoutImage = window.confirm(
         "상품 이미지가 없습니다. 이미지 없이 등록하시겠습니까?"
       );
       if (!confirmWithoutImage) return;
     }
 
-    console.log("상품 데이터:", productData);
+    const productPayload = {
+      name: productData.name,
+      price: parseInt(productData.price),
+      description: productData.description,
+      category: productData.category,
+      image: productData.images.length > 0 ? productData.images[0].url : '',
+      images: productData.images.length > 0 ? { 
+        main: productData.images[0].url,
+        gallery: productData.images.map(img => img.url)
+      } : (isEditMode ? { main: '', gallery: [] } : null),
+      stock: 10,
+    };
 
-    // 성공 메시지 및 페이지 이동
-    alert("상품이 성공적으로 등록되었습니다!");
-    navigate("/"); // 메인 페이지로 이동 (또는 상품 목록 페이지)
+    try {
+      if (isEditMode) {
+        updateProduct(productId, productPayload);
+        alert("상품이 성공적으로 수정되었습니다!");
+      } else {
+        addProduct(productPayload);
+        alert("상품이 성공적으로 등록되었습니다!");
+      }
+      navigate("/"); // 메인 페이지로 이동
+    } catch (error) {
+      console.error('Product save error:', error);
+      alert(`상품 ${isEditMode ? '수정' : '등록'} 중 오류가 발생했습니다.`);
+    }
   };
 
   return (
     <Container>
       <S.PageHeader>
-        <Text variant="h2">상품 관리</Text>
+        <Text variant="h2">{isEditMode ? '상품 수정' : '상품 관리'}</Text>
         <Text variant="body1" color="gray">
-          새로운 상품을 등록하거나 기존 상품을 수정할 수 있습니다.
+          {isEditMode 
+            ? '상품 정보를 수정할 수 있습니다.' 
+            : '새로운 상품을 등록하거나 기존 상품을 수정할 수 있습니다.'
+          }
         </Text>
       </S.PageHeader>
 
@@ -267,7 +348,7 @@ const ProductManagement = () => {
             취소
           </Button>
           <Button type="submit" variant="primary">
-            상품 등록
+            {isEditMode ? '상품 수정' : '상품 등록'}
           </Button>
         </S.ButtonGroup>
       </S.FormContainer>

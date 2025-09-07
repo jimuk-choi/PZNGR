@@ -71,7 +71,7 @@ const StatusItem = styled.li`
   display: flex;
   align-items: center;
   padding: 0.5rem 0;
-  color: ${props => props.completed ? '#28a745' : '#666'};
+  color: ${props => props.$completed ? '#28a745' : '#666'};
   font-size: 0.9rem;
 `;
 
@@ -84,7 +84,7 @@ const StatusIcon = styled.span`
   align-items: center;
   justify-content: center;
   font-size: 0.8rem;
-  background: ${props => props.completed ? '#28a745' : '#e3e3e3'};
+  background: ${props => props.$completed ? '#28a745' : '#e3e3e3'};
   color: white;
 `;
 
@@ -101,7 +101,7 @@ const ProgressFill = styled.div`
   height: 100%;
   background: linear-gradient(90deg, #007bff, #0056b3);
   transition: width 0.3s ease;
-  width: ${props => props.progress}%;
+  width: ${props => props.$progress}%;
 `;
 
 const AppLoadingScreen = ({ status }) => {
@@ -156,13 +156,13 @@ const AppLoadingScreen = ({ status }) => {
         </LoadingSubtext>
         
         <ProgressBar>
-          <ProgressFill progress={progress} />
+          <ProgressFill $progress={progress} />
         </ProgressBar>
         
         <StatusList>
           {statusItems.map((item) => (
-            <StatusItem key={item.key} completed={item.completed?.toString()}>
-              <StatusIcon completed={item.completed?.toString()}>
+            <StatusItem key={item.key} $completed={item.completed}>
+              <StatusIcon $completed={item.completed}>
                 {item.completed ? '✓' : '○'}
               </StatusIcon>
               {item.label}

@@ -84,6 +84,11 @@ function App() {
                   <ProductManagement />
                 </AdminRoute>
               } />
+              <Route path="/admin/products/edit/:productId" element={
+                <AdminRoute>
+                  <ProductManagement />
+                </AdminRoute>
+              } />
               {/* 기존 호환성을 위한 리다이렉트 */}
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

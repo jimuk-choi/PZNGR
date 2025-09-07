@@ -10,7 +10,7 @@ const Button = ({
 }) => {
   return (
     <StyledButton
-      state={state}
+      $state={state}
       onClick={onClick}
       className={className}
       {...props}

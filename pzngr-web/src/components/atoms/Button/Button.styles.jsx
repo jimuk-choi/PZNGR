@@ -34,7 +34,7 @@ export const StyledButton = styled.button`
       width: 100%;
       height: 1px;
       background-color: ${({ theme }) => theme.colors.black || '#000'};
-      opacity: ${props => props.state === "hovered" ? 1 : 0};
+      opacity: ${props => props.$state === "hovered" ? 1 : 0};
       transition: opacity ${({ theme }) => theme.transitions.fast || '0.3s ease'};
     }
   }
@@ -45,7 +45,7 @@ export const StyledButton = styled.button`
     }
   }
 
-  ${props => props.state === "hovered" && `
+  ${props => props.$state === "hovered" && `
     .underline::after {
       opacity: 1;
     }
