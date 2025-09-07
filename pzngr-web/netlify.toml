@@ -1,0 +1,15 @@
+[build]
+  publish = "build"
+  command = "npm run build"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Cross-Origin-Opener-Policy = "unsafe-none"
+    Cross-Origin-Embedder-Policy = "unsafe-none"
+    Referrer-Policy = "origin-when-cross-origin"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
